@@ -20,7 +20,6 @@
     --white: #FFFFFF;
   }
 
-  /* 수정: - 를 * 로 변경하고 표준 따옴표 사용 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -44,7 +43,6 @@
     flex-direction: column;
   }
 
-  /* Decorative blobs */
   .blob {
     position: absolute;
     border-radius: 50%;
@@ -164,20 +162,6 @@
     opacity: 0.85;
     letter-spacing: 0;
     font-family: 'Gowun Dodum', sans-serif;
-  }
-
-  .dir-btn::after {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-  }
-  .dir-btn:hover::after {
-    opacity: 0.25;
-    transform: scale(1.05);
   }
 
   .time-input-area {
@@ -423,10 +407,6 @@
     letter-spacing: 2px;
     animation: pulse 2s ease-in-out infinite;
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
 
   @keyframes ping {
     0% { transform: scale(1); opacity: 0.6; }
@@ -509,6 +489,10 @@
       <div class="done-title">오늘도 수고하셨어요</div>
       <div class="done-stats" id="done-stats-area"></div>
       <div class="done-love">엄마 고마워요 ♥</div>
+      
+      <div style="margin-top: 32px; width: 100%;">
+        <button class="btn-primary" onclick="resetApp()">처음으로</button>
+      </div>
     </div>
   </div>
 </div>
@@ -525,26 +509,23 @@
   };
 
   const CIRCUMFERENCE = 2 * Math.PI * 110;
-  let wakeLock = null; // Wake Lock 객체 저장용
+  let wakeLock = null;
 
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
-  // 화면 잠금 방지 요청 (최신 Wake Lock API)
   async function requestWakeLock() {
     try {
       if ('wakeLock' in navigator) {
         wakeLock = await navigator.wakeLock.request('screen');
-        console.log('Wake Lock is active');
       }
     } catch (err) {
-      console.error(`${err.name}, ${err.message}`);
+      console.warn('WakeLock error:', err);
     }
   }
 
-  // 화면 잠금 방지 해제
   function releaseWakeLock() {
     if (wakeLock !== null) {
       wakeLock.release();
@@ -572,8 +553,7 @@
     const sideLabel = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
     document.getElementById('timer-side-label').textContent = sideLabel;
     showPage('page-timer');
-    
-    requestWakeLock(); // 타이머 시작 시 잠금 방지 실행
+    requestWakeLock();
 
     state.secondsLeft = state.durationMin * 60;
     state.totalSeconds = state.durationMin * 60;
@@ -593,7 +573,6 @@
         clearInterval(state.timerInterval);
         state.timerInterval = null;
         state.sessions[state.currentSide].count++;
-        // 타이머 완료 시 잠시 해제하되, 버튼 선택 전까지 유지하려면 여기서 release 안 해도 됨
         onTimerEnd();
       }
     }, 1000);
@@ -638,9 +617,25 @@
   function endSession() {
     clearInterval(state.timerInterval);
     state.timerInterval = null;
-    releaseWakeLock(); // 완전히 종료될 때 잠금 방지 해제
+    releaseWakeLock();
     buildDoneStats();
     showPage('page-done');
+  }
+
+  // 앱 리셋 및 초기화
+  function resetApp() {
+    state.sessions.left = { count: 0, seconds: 0 };
+    state.sessions.right = { count: 0, seconds: 0 };
+    state.firstSide = '';
+    state.currentSide = '';
+    state.secondsLeft = 0;
+    
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    document.getElementById('timer-actions').classList.add('hidden');
+    document.getElementById('ping-ring').classList.remove('show');
+    updateCircle(1);
+    
+    showPage('page-start');
   }
 
   function buildDoneStats() {
@@ -690,7 +685,6 @@
     }
   }
 
-  // 앱이 다시 포커스될 때 Wake Lock이 해제되었으면 다시 요청
   document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
       await requestWakeLock();
