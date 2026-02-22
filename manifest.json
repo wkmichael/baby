@@ -1,0 +1,18 @@
+{
+  "short_name": "유축타이머",
+  "name": "소중한 시간: 유축 타이머",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1791/1791171.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#FFF8F2",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#F2A58E",
+  "description": "엄마와 아기를 위한 깔끔한 유축 타이머"
+}
