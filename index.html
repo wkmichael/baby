@@ -510,6 +510,7 @@
 
   const CIRCUMFERENCE = 2 * Math.PI * 110;
   let wakeLock = null;
+  let audioCtx = null; // 오디오 컨텍스트 전역 관리
 
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -530,6 +531,29 @@
     if (wakeLock !== null) {
       wakeLock.release();
       wakeLock = null;
+    }
+  }
+
+  // 오디오 초기화 및 잠금 해제 (사용자 클릭 시 매번 호출)
+  function warmAudio() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      
+      // 들리지 않는 아주 짧은 무음을 재생하여 브라우저의 오디오 하드웨어를 깨워둡니다.
+      const osc = audioCtx.createOscillator();
+      const silent = audioCtx.createGain();
+      silent.gain.value = 0;
+      osc.connect(silent);
+      silent.connect(audioCtx.destination);
+      osc.start(0);
+      osc.stop(0.01); 
+    } catch(e) {
+      console.warn('Audio warming error:', e);
     }
   }
 
@@ -592,20 +616,44 @@
   }
 
   function onTimerEnd() {
-    playAlarm();
+    playAlarm(); // 알람 호출
     document.getElementById('ping-ring').classList.add('show');
     document.getElementById('stats-inline-text').textContent = getStatsText();
     document.getElementById('timer-actions').classList.remove('hidden');
   }
 
-  let audioCtx = null;
-  function ensureAudioCtx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-  }
-
-  function warmAudio() {
-    try { ensureAudioCtx(); } catch(e) {}
+  // 알람 재생 (상태 체크 강화)
+  async function playAlarm() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // 컨텍스트가 멈춰있다면(수 분이 지나서) 다시 깨웁니다.
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+      
+      const ctx = audioCtx;
+      function beep(startTime) {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
+        gain.gain.setValueAtTime(0.8, startTime + 0.35);
+        gain.gain.linearRampToValueAtTime(0, startTime + 0.55);
+        osc.start(startTime);
+        osc.stop(startTime + 0.6);
+      }
+      
+      // 즉시 1회, 0.75초 후 1회 울림
+      beep(ctx.currentTime);
+      beep(ctx.currentTime + 0.75);
+    } catch(e) {
+      console.warn('PlayAlarm error:', e);
+    }
   }
 
   function getStatsText() {
@@ -622,7 +670,6 @@
     showPage('page-done');
   }
 
-  // 앱 리셋 및 초기화
   function resetApp() {
     state.sessions.left = { count: 0, seconds: 0 };
     state.sessions.right = { count: 0, seconds: 0 };
@@ -660,34 +707,13 @@
     `;
   }
 
-  function playAlarm() {
-    try {
-      ensureAudioCtx();
-      const ctx = audioCtx;
-      function beep(startTime) {
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0, startTime);
-        gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
-        gain.gain.setValueAtTime(0.8, startTime + 0.35);
-        gain.gain.linearRampToValueAtTime(0, startTime + 0.55);
-        osc.start(startTime);
-        osc.stop(startTime + 0.6);
-      }
-      beep(ctx.currentTime);
-      beep(ctx.currentTime + 0.75);
-    } catch(e) {
-      console.warn('Audio error:', e);
-    }
-  }
-
   document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
       await requestWakeLock();
+    }
+    // 앱이 백그라운드에 있다가 다시 켜졌을 때 오디오 컨텍스트도 체크합니다.
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
     }
   });
 </script>
