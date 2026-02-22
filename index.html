@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -21,441 +20,433 @@
     --white: #FFFFFF;
   }
 
-- { margin: 0; padding: 0; box-sizing: border-box; }
+  /* 수정: - 를 * 로 변경하고 표준 따옴표 사용 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-font-family: ‘Gowun Dodum’, sans-serif;
-background: var(–cream);
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-overflow: hidden;
-}
+  body {
+    font-family: 'Gowun Dodum', sans-serif;
+    background: var(--cream);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
 
-.phone-wrap {
-width: 100%;
-max-width: 390px;
-min-height: 100vh;
-background: var(–cream);
-position: relative;
-overflow: hidden;
-display: flex;
-flex-direction: column;
-}
+  .phone-wrap {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100vh;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* Decorative blobs */
-.blob {
-position: absolute;
-border-radius: 50%;
-pointer-events: none;
-z-index: 0;
-}
-.blob-1 {
-width: 280px; height: 280px;
-background: radial-gradient(circle, #FBDDD0 0%, transparent 70%);
-top: -80px; right: -60px;
-}
-.blob-2 {
-width: 200px; height: 200px;
-background: radial-gradient(circle, #F7E8D8 0%, transparent 70%);
-bottom: 100px; left: -60px;
-}
+  /* Decorative blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 {
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, #FBDDD0 0%, transparent 70%);
+    top: -80px; right: -60px;
+  }
+  .blob-2 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, #F7E8D8 0%, transparent 70%);
+    bottom: 100px; left: -60px;
+  }
 
-/* ===== PAGE SYSTEM ===== */
-.page {
-position: absolute;
-inset: 0;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-padding: 40px 28px;
-opacity: 0;
-transform: translateY(20px);
-pointer-events: none;
-transition: opacity 0.45s ease, transform 0.45s ease;
-z-index: 1;
-}
-.page.active {
-opacity: 1;
-transform: translateY(0);
-pointer-events: all;
-}
+  /* ===== PAGE SYSTEM ===== */
+  .page {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 28px;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    z-index: 1;
+  }
+  .page.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
 
-/* ===== START PAGE ===== */
-.logo-area {
-text-align: center;
-margin-bottom: 48px;
-}
-.logo-icon {
-font-size: 44px;
-margin-bottom: 10px;
-display: block;
-animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-0%, 100% { transform: translateY(0); }
-50% { transform: translateY(-6px); }
-}
-.logo-title {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 22px;
-color: var(–text-dark);
-letter-spacing: 2px;
-font-weight: 600;
-}
-.logo-sub {
-font-size: 13px;
-color: var(–text-light);
-margin-top: 6px;
-letter-spacing: 1px;
-}
+  /* ===== START PAGE ===== */
+  .logo-area {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .logo-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .logo-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    color: var(--text-dark);
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .logo-sub {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
 
-.section-label {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 17px;
-color: var(–text-dark);
-text-align: center;
-margin-bottom: 32px;
-font-weight: 400;
-line-height: 1.6;
-}
+  .section-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 32px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
 
-.dir-btns {
-display: flex;
-gap: 32px;
-margin-bottom: 44px;
-}
+  .dir-btns {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 44px;
+  }
 
-.dir-btn {
-width: 110px;
-height: 110px;
-border-radius: 50%;
-border: none;
-cursor: pointer;
-font-family: ‘Noto Serif KR’, serif;
-font-size: 18px;
-font-weight: 600;
-letter-spacing: 1px;
-position: relative;
-transition: transform 0.2s, box-shadow 0.2s;
-outline: none;
-}
-.dir-btn-left {
-background: linear-gradient(135deg, #F2A58E, #E8796A);
-color: white;
-box-shadow: 0 8px 28px rgba(232, 121, 106, 0.35);
-}
-.dir-btn-right {
-background: linear-gradient(135deg, #D4A96A, #C49050);
-color: white;
-box-shadow: 0 8px 28px rgba(196, 144, 80, 0.35);
-}
-.dir-btn:active {
-transform: scale(0.93);
-box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-}
-.dir-btn-label {
-font-size: 12px;
-font-weight: 300;
-display: block;
-margin-top: 3px;
-opacity: 0.85;
-letter-spacing: 0;
-font-family: ‘Gowun Dodum’, sans-serif;
-}
+  .dir-btn {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .dir-btn-left {
+    background: linear-gradient(135deg, #F2A58E, #E8796A);
+    color: white;
+    box-shadow: 0 8px 28px rgba(232, 121, 106, 0.35);
+  }
+  .dir-btn-right {
+    background: linear-gradient(135deg, #D4A96A, #C49050);
+    color: white;
+    box-shadow: 0 8px 28px rgba(196, 144, 80, 0.35);
+  }
+  .dir-btn:active {
+    transform: scale(0.93);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .dir-btn-label {
+    font-size: 12px;
+    font-weight: 300;
+    display: block;
+    margin-top: 3px;
+    opacity: 0.85;
+    letter-spacing: 0;
+    font-family: 'Gowun Dodum', sans-serif;
+  }
 
-/* Ripple effect */
-.dir-btn::after {
-content: ‘’;
-position: absolute;
-inset: -6px;
-border-radius: 50%;
-border: 2px solid currentColor;
-opacity: 0;
-transition: opacity 0.3s, transform 0.3s;
-}
-.dir-btn:hover::after {
-opacity: 0.25;
-transform: scale(1.05);
-}
+  .dir-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .dir-btn:hover::after {
+    opacity: 0.25;
+    transform: scale(1.05);
+  }
 
-/* Time input */
-.time-input-area {
-display: flex;
-align-items: center;
-gap: 10px;
-background: white;
-border-radius: 20px;
-padding: 16px 24px;
-box-shadow: 0 4px 20px rgba(196, 97, 74, 0.1);
-}
-.time-label {
-font-size: 15px;
-color: var(–text-mid);
-}
-.time-input {
-width: 56px;
-border: none;
-border-bottom: 2px solid var(–warm-rose);
-background: transparent;
-font-family: ‘Noto Serif KR’, serif;
-font-size: 22px;
-color: var(–deep-rose);
-text-align: center;
-outline: none;
-font-weight: 600;
-}
-.time-input::-webkit-inner-spin-button { display: none; }
+  .time-input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border-radius: 20px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 20px rgba(196, 97, 74, 0.1);
+  }
+  .time-label {
+    font-size: 15px;
+    color: var(--text-mid);
+  }
+  .time-input {
+    width: 56px;
+    border: none;
+    border-bottom: 2px solid var(--warm-rose);
+    background: transparent;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    color: var(--deep-rose);
+    text-align: center;
+    outline: none;
+    font-weight: 600;
+  }
+  .time-input::-webkit-inner-spin-button { display: none; }
 
-/* ===== TIMER PAGE ===== */
-.timer-header {
-text-align: center;
-margin-bottom: 36px;
-}
-.timer-direction {
-font-size: 13px;
-color: var(–text-light);
-letter-spacing: 2px;
-text-transform: uppercase;
-margin-bottom: 6px;
-}
-.timer-side {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 26px;
-color: var(–text-dark);
-font-weight: 600;
-}
+  /* ===== TIMER PAGE ===== */
+  .timer-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .timer-direction {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .timer-side {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 26px;
+    color: var(--text-dark);
+    font-weight: 600;
+  }
 
-/* Circular timer */
-.circle-wrap {
-position: relative;
-width: 240px;
-height: 240px;
-margin-bottom: 48px;
-}
-.circle-bg {
-position: absolute;
-inset: 0;
-border-radius: 50%;
-background: white;
-box-shadow: 0 12px 40px rgba(196, 97, 74, 0.15), inset 0 0 0 2px #F5E0D8;
-}
-.circle-svg {
-position: absolute;
-inset: 0;
-transform: rotate(-90deg);
-}
-.circle-track {
-fill: none;
-stroke: #F5E0D8;
-stroke-width: 8;
-}
-.circle-progress {
-fill: none;
-stroke: var(–warm-rose);
-stroke-width: 8;
-stroke-linecap: round;
-stroke-dasharray: 691;
-stroke-dashoffset: 0;
-transition: stroke-dashoffset 1s linear;
-}
-.circle-center {
-position: absolute;
-inset: 0;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-}
-.time-display {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 52px;
-font-weight: 300;
-color: var(–text-dark);
-letter-spacing: 2px;
-line-height: 1;
-}
-.time-unit {
-font-size: 13px;
-color: var(–text-light);
-margin-top: 6px;
-letter-spacing: 1px;
-}
+  .circle-wrap {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin-bottom: 48px;
+  }
+  .circle-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 12px 40px rgba(196, 97, 74, 0.15), inset 0 0 0 2px #F5E0D8;
+  }
+  .circle-svg {
+    position: absolute;
+    inset: 0;
+    transform: rotate(-90deg);
+  }
+  .circle-track {
+    fill: none;
+    stroke: #F5E0D8;
+    stroke-width: 8;
+  }
+  .circle-progress {
+    fill: none;
+    stroke: var(--warm-rose);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 691;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .circle-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .time-display {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--text-dark);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .time-unit {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
 
-/* Session stats */
-.session-stats {
-font-size: 12px;
-color: var(–text-light);
-letter-spacing: 1px;
-text-align: center;
-line-height: 1.8;
-}
+  .session-stats {
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 1.8;
+  }
 
-/* Bottom actions */
-.bottom-actions {
-position: fixed;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 100%;
-max-width: 390px;
-padding: 20px 28px 36px;
-background: linear-gradient(to top, var(–cream) 75%, transparent);
-display: flex;
-flex-direction: column;
-gap: 10px;
-z-index: 10;
-}
+  .bottom-actions {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 390px;
+    padding: 20px 28px 36px;
+    background: linear-gradient(to top, var(--cream) 75%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+  }
 
-.btn-primary {
-width: 100%;
-padding: 17px;
-border: none;
-border-radius: 18px;
-background: linear-gradient(135deg, #F2A58E, #E8796A);
-color: white;
-font-family: ‘Noto Serif KR’, serif;
-font-size: 17px;
-font-weight: 600;
-cursor: pointer;
-box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35);
-transition: transform 0.18s, box-shadow 0.18s;
-letter-spacing: 1px;
-}
-.btn-primary:active {
-transform: scale(0.97);
-box-shadow: 0 3px 12px rgba(232, 121, 106, 0.25);
-}
-.btn-secondary {
-width: 100%;
-padding: 14px;
-border: 2px solid var(–blush);
-border-radius: 18px;
-background: transparent;
-color: var(–text-mid);
-font-family: ‘Gowun Dodum’, sans-serif;
-font-size: 15px;
-cursor: pointer;
-transition: background 0.18s;
-letter-spacing: 1px;
-}
-.btn-secondary:active { background: var(–blush); }
+  .btn-primary {
+    width: 100%;
+    padding: 17px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #F2A58E, #E8796A);
+    color: white;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35);
+    transition: transform 0.18s, box-shadow 0.18s;
+    letter-spacing: 1px;
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
+    box-shadow: 0 3px 12px rgba(232, 121, 106, 0.25);
+  }
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--blush);
+    border-radius: 18px;
+    background: transparent;
+    color: var(--text-mid);
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.18s;
+    letter-spacing: 1px;
+  }
+  .btn-secondary:active { background: var(--blush); }
 
-.stats-inline {
-text-align: center;
-font-size: 12px;
-color: var(–text-light);
-letter-spacing: 0.5px;
-line-height: 1.7;
-padding-top: 4px;
-}
+  .stats-inline {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+    padding-top: 4px;
+  }
 
-.hidden { display: none !important; }
+  .hidden { display: none !important; }
 
-/* ===== DONE PAGE ===== */
-.done-card {
-background: white;
-border-radius: 32px;
-padding: 40px 32px;
-box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12);
-text-align: center;
-width: 100%;
-}
-.done-icon {
-font-size: 52px;
-margin-bottom: 20px;
-display: block;
-animation: float 3s ease-in-out infinite;
-}
-.done-title {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 22px;
-color: var(–text-dark);
-font-weight: 600;
-margin-bottom: 28px;
-letter-spacing: 1px;
-}
-.done-stats {
-background: var(–cream);
-border-radius: 20px;
-padding: 22px 24px;
-margin-bottom: 24px;
-}
-.done-stat-row {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 8px 0;
-border-bottom: 1px solid var(–blush);
-}
-.done-stat-row:last-child { border-bottom: none; }
-.done-stat-label {
-font-size: 15px;
-color: var(–text-mid);
-letter-spacing: 0.5px;
-}
-.done-stat-value {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 17px;
-color: var(–deep-rose);
-font-weight: 600;
-}
-.done-total-row {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 16px;
-padding-top: 12px;
-border-top: 2px solid var(–blush);
-}
-.done-total-label {
-font-size: 14px;
-color: var(–text-light);
-letter-spacing: 1px;
-}
-.done-total-value {
-font-family: ‘Noto Serif KR’, serif;
-font-size: 20px;
-color: var(–warm-brown);
-font-weight: 600;
-}
-.done-love {
-font-size: 15px;
-color: var(–warm-rose);
-margin-top: 6px;
-letter-spacing: 2px;
-animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.5; }
-}
+  /* ===== DONE PAGE ===== */
+  .done-card {
+    background: white;
+    border-radius: 32px;
+    padding: 40px 32px;
+    box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12);
+    text-align: center;
+    width: 100%;
+  }
+  .done-icon {
+    font-size: 52px;
+    margin-bottom: 20px;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+  .done-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+  .done-stats {
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+  }
+  .done-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--blush);
+  }
+  .done-stat-row:last-child { border-bottom: none; }
+  .done-stat-label {
+    font-size: 15px;
+    color: var(--text-mid);
+    letter-spacing: 0.5px;
+  }
+  .done-stat-value {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    color: var(--deep-rose);
+    font-weight: 600;
+  }
+  .done-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 2px solid var(--blush);
+  }
+  .done-total-label {
+    font-size: 14px;
+    color: var(--text-light);
+    letter-spacing: 1px;
+  }
+  .done-total-value {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    color: var(--warm-brown);
+    font-weight: 600;
+  }
+  .done-love {
+    font-size: 15px;
+    color: var(--warm-rose);
+    margin-top: 6px;
+    letter-spacing: 2px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 
-/* Pulsing ring on timer done */
-@keyframes ping {
-0% { transform: scale(1); opacity: 0.6; }
-100% { transform: scale(1.4); opacity: 0; }
-}
-.ping-ring {
-position: absolute;
-inset: -12px;
-border-radius: 50%;
-border: 3px solid var(–warm-rose);
-animation: ping 1.2s ease-out infinite;
-display: none;
-}
-.ping-ring.show { display: block; }
+  @keyframes ping {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  .ping-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 3px solid var(--warm-rose);
+    animation: ping 1.2s ease-out infinite;
+    display: none;
+  }
+  .ping-ring.show { display: block; }
 </style>
-
 </head>
 <body>
 <div class="phone-wrap">
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
-
-  <!-- ===== START PAGE ===== -->
 
   <div class="page active" id="page-start">
     <div class="logo-area">
@@ -464,30 +455,25 @@ display: none;
       <div class="logo-sub">소중한 시간을 함께해요</div>
     </div>
 
-```
-<div class="section-label">유축 시작 방향을<br>선택해 주세요</div>
+    <div class="section-label">유축 시작 방향을<br>선택해 주세요</div>
 
-<div class="dir-btns">
-  <button class="dir-btn dir-btn-left" onclick="startTimer('left')">
-    왼쪽
-    <span class="dir-btn-label">◀ LEFT</span>
-  </button>
-  <button class="dir-btn dir-btn-right" onclick="startTimer('right')">
-    오른쪽
-    <span class="dir-btn-label">RIGHT ▶</span>
-  </button>
-</div>
+    <div class="dir-btns">
+      <button class="dir-btn dir-btn-left" onclick="startTimer('left')">
+        왼쪽
+        <span class="dir-btn-label">◀ LEFT</span>
+      </button>
+      <button class="dir-btn dir-btn-right" onclick="startTimer('right')">
+        오른쪽
+        <span class="dir-btn-label">RIGHT ▶</span>
+      </button>
+    </div>
 
-<div class="time-input-area">
-  <span class="time-label">1회 유축 시간</span>
-  <input type="number" class="time-input" id="duration-input" value="5" min="1" max="60">
-  <span class="time-label">분</span>
-</div>
-```
-
+    <div class="time-input-area">
+      <span class="time-label">1회 유축 시간</span>
+      <input type="number" class="time-input" id="duration-input" value="5" min="1" max="60">
+      <span class="time-label">분</span>
+    </div>
   </div>
-
-  <!-- ===== TIMER PAGE ===== -->
 
   <div class="page" id="page-timer">
     <div class="timer-header">
@@ -495,33 +481,27 @@ display: none;
       <div class="timer-side" id="timer-side-label">왼쪽 가슴</div>
     </div>
 
-```
-<div class="circle-wrap">
-  <div class="circle-bg"></div>
-  <div class="ping-ring" id="ping-ring"></div>
-  <svg class="circle-svg" viewBox="0 0 240 240">
-    <circle class="circle-track" cx="120" cy="120" r="110"/>
-    <circle class="circle-progress" id="circle-prog" cx="120" cy="120" r="110"/>
-  </svg>
-  <div class="circle-center">
-    <div class="time-display" id="time-display">05:00</div>
-    <div class="time-unit">남은 시간</div>
+    <div class="circle-wrap">
+      <div class="circle-bg"></div>
+      <div class="ping-ring" id="ping-ring"></div>
+      <svg class="circle-svg" viewBox="0 0 240 240">
+        <circle class="circle-track" cx="120" cy="120" r="110"/>
+        <circle class="circle-progress" id="circle-prog" cx="120" cy="120" r="110"/>
+      </svg>
+      <div class="circle-center">
+        <div class="time-display" id="time-display">05:00</div>
+        <div class="time-unit">남은 시간</div>
+      </div>
+    </div>
+
+    <div class="session-stats" id="session-stats"></div>
+
+    <div class="bottom-actions hidden" id="timer-actions">
+      <button class="btn-primary" id="btn-opposite" onclick="startOpposite()">반대쪽 시작</button>
+      <button class="btn-secondary" onclick="endSession()">종료</button>
+      <div class="stats-inline" id="stats-inline-text"></div>
+    </div>
   </div>
-</div>
-
-<div class="session-stats" id="session-stats"></div>
-
-<!-- Buttons (shown after timer ends) -->
-<div class="bottom-actions hidden" id="timer-actions">
-  <button class="btn-primary" id="btn-opposite" onclick="startOpposite()">반대쪽 시작</button>
-  <button class="btn-secondary" onclick="endSession()">종료</button>
-  <div class="stats-inline" id="stats-inline-text"></div>
-</div>
-```
-
-  </div>
-
-  <!-- ===== DONE PAGE ===== -->
 
   <div class="page" id="page-done">
     <div class="done-card">
@@ -534,7 +514,6 @@ display: none;
 </div>
 
 <script>
-  // State
   let state = {
     firstSide: '',
     currentSide: '',
@@ -545,15 +524,36 @@ display: none;
     sessions: { left: { count: 0, seconds: 0 }, right: { count: 0, seconds: 0 } }
   };
 
-  const CIRCUMFERENCE = 2 * Math.PI * 110; // ~691
+  const CIRCUMFERENCE = 2 * Math.PI * 110;
+  let wakeLock = null; // Wake Lock 객체 저장용
 
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
+  // 화면 잠금 방지 요청 (최신 Wake Lock API)
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('Wake Lock is active');
+      }
+    } catch (err) {
+      console.error(`${err.name}, ${err.message}`);
+    }
+  }
+
+  // 화면 잠금 방지 해제
+  function releaseWakeLock() {
+    if (wakeLock !== null) {
+      wakeLock.release();
+      wakeLock = null;
+    }
+  }
+
   function startTimer(side) {
-    warmAudio(); // iOS: AudioContext must be created inside a user gesture tap
+    warmAudio();
     state.durationMin = parseInt(document.getElementById('duration-input').value) || 5;
     state.firstSide = side;
     state.currentSide = side;
@@ -561,7 +561,7 @@ display: none;
   }
 
   function startOpposite() {
-    warmAudio(); // keep AudioContext alive
+    warmAudio();
     state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
     document.getElementById('timer-actions').classList.add('hidden');
     document.getElementById('ping-ring').classList.remove('show');
@@ -572,7 +572,8 @@ display: none;
     const sideLabel = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
     document.getElementById('timer-side-label').textContent = sideLabel;
     showPage('page-timer');
-    requestWakeLock(); // 타이머 시작 시 화면 꺼짐 방지
+    
+    requestWakeLock(); // 타이머 시작 시 잠금 방지 실행
 
     state.secondsLeft = state.durationMin * 60;
     state.totalSeconds = state.durationMin * 60;
@@ -592,7 +593,7 @@ display: none;
         clearInterval(state.timerInterval);
         state.timerInterval = null;
         state.sessions[state.currentSide].count++;
-        releaseWakeLock(); // 타이머 종료 시 Wake Lock 해제
+        // 타이머 완료 시 잠시 해제하되, 버튼 선택 전까지 유지하려면 여기서 release 안 해도 됨
         onTimerEnd();
       }
     }, 1000);
@@ -602,9 +603,7 @@ display: none;
     const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
     const s = (state.secondsLeft % 60).toString().padStart(2, '0');
     document.getElementById('time-display').textContent = `${m}:${s}`;
-
-    const statsText = getStatsText();
-    document.getElementById('session-stats').textContent = statsText;
+    document.getElementById('session-stats').textContent = getStatsText();
   }
 
   function updateCircle(ratio) {
@@ -620,57 +619,12 @@ display: none;
     document.getElementById('timer-actions').classList.remove('hidden');
   }
 
-  // ── NoSleep: 무음 video loop으로 화면 꺼짐 방지 ──
-  let noSleepVideo = null;
-
-  function createNoSleepVideo() {
-    if (noSleepVideo) return;
-    // 1x1 투명 WebM (base64) — 재생 중이면 iOS/Android가 화면을 끄지 않음
-    const src = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggFGTbuMU6uEHlO7a1OsggGETbuMU6uEHxO7a1OsggHITbuMU6uEIDO7a1OsggHlTbuMU6uEIXO7a1OsggHyTbuMU6uEIlO7a1OsggICTbuMU6uEIvO7a1OsggIPTbuMU6uEI3O7a1OsggIUTbuMU6uEJBO7a1OsggIZTbuMU6uEJFO7a1OsggIeTbuMU6uEJJO7a1OsggIjTbuMU6uEJNO7a1OsggIoTbuMU6uEJRO7a1OsggItTbuMU6uEJVO7a1OsggIyTbuMU6uEJZO7a1OsggI3TbuMU6uEJdO7a1OsggI8TbuMU6uEJhO7a1OsggJBTbuMU6uEJlO7a1OsggJGTbuMU6uEJpO7a1OsggJLTbuMU6uEJtO7a1OsggJQTbuMU6uEJxO7a1OsggJVTbuMU6uEJ1O7a1OsggJaTbuMU6uEJ5O7a1OsggJfTbuMU6uEJ9O7a1OsggJkSsGBAlvBieyBgaGBh6+gQGIgQAA';
-    noSleepVideo = document.createElement('video');
-    noSleepVideo.setAttribute('loop', '');
-    noSleepVideo.setAttribute('playsinline', '');
-    noSleepVideo.setAttribute('muted', '');
-    noSleepVideo.setAttribute('webkit-playsinline', '');
-    noSleepVideo.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;';
-    noSleepVideo.src = src;
-    document.body.appendChild(noSleepVideo);
-  }
-
-  function noSleepEnable() {
-    createNoSleepVideo();
-    noSleepVideo && noSleepVideo.play().catch(() => {});
-  }
-
-  function noSleepDisable() {
-    if (noSleepVideo) {
-      noSleepVideo.pause();
-    }
-  }
-
-  function requestWakeLock() {
-    noSleepEnable();
-  }
-
-  function releaseWakeLock() {
-    noSleepDisable();
-  }
-
-  // ── AudioContext: iOS requires it to be created & resumed inside a user gesture.
-  //    We create it once on the very first user tap, then reuse it.
   let audioCtx = null;
-
   function ensureAudioCtx() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    // iOS suspends the context if no user gesture recently; resume it.
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
-  // Call this on every button tap so AudioContext is warm when we need it.
   function warmAudio() {
     try { ensureAudioCtx(); } catch(e) {}
   }
@@ -678,14 +632,13 @@ display: none;
   function getStatsText() {
     const L = state.sessions.left;
     const R = state.sessions.right;
-    // Math.floor: count a minute only after a full 60 seconds have elapsed
     return `왼쪽 ${L.count}회(${Math.floor(L.seconds/60)}분)  ·  오른쪽 ${R.count}회(${Math.floor(R.seconds/60)}분)`;
   }
 
   function endSession() {
     clearInterval(state.timerInterval);
     state.timerInterval = null;
-    releaseWakeLock(); // 종료 버튼 시 Wake Lock 해제
+    releaseWakeLock(); // 완전히 종료될 때 잠금 방지 해제
     buildDoneStats();
     showPage('page-done');
   }
@@ -693,7 +646,6 @@ display: none;
   function buildDoneStats() {
     const L = state.sessions.left;
     const R = state.sessions.right;
-    // Math.floor for total as well
     const totalMin = Math.floor((L.seconds + R.seconds) / 60);
 
     const area = document.getElementById('done-stats-area');
@@ -717,33 +669,33 @@ display: none;
     try {
       ensureAudioCtx();
       const ctx = audioCtx;
-
       function beep(startTime) {
         const osc  = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
-
-        osc.frequency.value = 880; // A5
+        osc.frequency.value = 880;
         osc.type = 'sine';
-
         gain.gain.setValueAtTime(0, startTime);
         gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
         gain.gain.setValueAtTime(0.8, startTime + 0.35);
         gain.gain.linearRampToValueAtTime(0, startTime + 0.55);
-
         osc.start(startTime);
         osc.stop(startTime + 0.6);
       }
-
-      // 2회 울림 (0.75초 간격)
       beep(ctx.currentTime);
       beep(ctx.currentTime + 0.75);
     } catch(e) {
       console.warn('Audio error:', e);
     }
   }
-</script>
 
+  // 앱이 다시 포커스될 때 Wake Lock이 해제되었으면 다시 요청
+  document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+      await requestWakeLock();
+    }
+  });
+</script>
 </body>
 </html>
