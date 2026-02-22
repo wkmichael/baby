@@ -381,6 +381,30 @@
   let wakeLock = null;
   let audioCtx = null;
 
+  // 알림 권한 요청 및 전송 로직
+  function requestNotificationPermission() {
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+  }
+  
+  function sendNotification() {
+    if ("Notification" in window && Notification.permission === "granted") {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("타이머 완료!", {
+          body: `${state.currentSide === 'left' ? '왼쪽' : '오른쪽'} 유축이 끝났습니다.`,
+          icon: "https://cdn-icons-png.flaticon.com/512/1791/1791171.png", // 앱 아이콘
+          vibrate: [200, 100, 200],
+          tag: "timer-done"
+        });
+      });
+    }
+  }
+  
+  // 페이지 로드 시 또는 첫 버튼 클릭 시 권한 요청
+  window.addEventListener('load', requestNotificationPermission);
+
+
   // 공통 버튼 핸들러: 소리 재생 + 액션 실행
   function handleBtnClick(actionFunc) {
     warmAudio();      // 오디오 활성화
@@ -499,7 +523,9 @@
   }
 
   function onTimerEnd() {
-    playAlarm();
+    playAlarm(); // 기존 사운드 유지
+    sendNotification(); // [추가] 시스템 알림 발송
+    
     document.getElementById('ping-ring').classList.add('show');
     document.getElementById('running-actions').classList.add('hidden');
     document.getElementById('end-actions').classList.remove('hidden');
