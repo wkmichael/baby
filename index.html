@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>유축 타이머</title>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#F2A58E">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1791/1791171.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -44,6 +46,17 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+  }
+
+  /* 우상단 버전 텍스트 */
+  .version-tag {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 11px;
+    color: var(--text-light);
+    z-index: 10;
+    font-weight: 300;
   }
 
   .blob {
@@ -155,7 +168,6 @@
   }
   .dir-btn:active {
     transform: scale(0.93);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   }
   .dir-btn-label {
     font-size: 12px;
@@ -192,9 +204,7 @@
     outline: none;
     font-weight: 600;
   }
-  .time-input::-webkit-inner-spin-button { display: none; }
 
-  /* 안내 문구 스타일 */
   .footer-notice {
     margin-top: auto;
     padding-bottom: 20px;
@@ -205,86 +215,20 @@
   }
 
   /* ===== TIMER PAGE ===== */
-  .timer-header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-  .timer-direction {
-    font-size: 13px;
-    color: var(--text-light);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .timer-side {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 26px;
-    color: var(--text-dark);
-    font-weight: 600;
-  }
+  .timer-header { text-align: center; margin-bottom: 36px; }
+  .timer-direction { font-size: 13px; color: var(--text-light); letter-spacing: 2px; margin-bottom: 6px; }
+  .timer-side { font-family: 'Noto Serif KR', serif; font-size: 26px; color: var(--text-dark); font-weight: 600; }
 
-  .circle-wrap {
-    position: relative;
-    width: 240px;
-    height: 240px;
-    margin-bottom: 48px;
-  }
-  .circle-bg {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 12px 40px rgba(196, 97, 74, 0.15), inset 0 0 0 2px #F5E0D8;
-  }
-  .circle-svg {
-    position: absolute;
-    inset: 0;
-    transform: rotate(-90deg);
-  }
-  .circle-track {
-    fill: none;
-    stroke: #F5E0D8;
-    stroke-width: 8;
-  }
-  .circle-progress {
-    fill: none;
-    stroke: var(--warm-rose);
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-dasharray: 691;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 1s linear;
-  }
-  .circle-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .time-display {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 52px;
-    font-weight: 300;
-    color: var(--text-dark);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-  .time-unit {
-    font-size: 13px;
-    color: var(--text-light);
-    margin-top: 6px;
-    letter-spacing: 1px;
-  }
+  .circle-wrap { position: relative; width: 240px; height: 240px; margin-bottom: 48px; }
+  .circle-bg { position: absolute; inset: 0; border-radius: 50%; background: white; box-shadow: 0 12px 40px rgba(196, 97, 74, 0.15), inset 0 0 0 2px #F5E0D8; }
+  .circle-svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .circle-track { fill: none; stroke: #F5E0D8; stroke-width: 8; }
+  .circle-progress { fill: none; stroke: var(--warm-rose); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 691; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+  .circle-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .time-display { font-family: 'Noto Serif KR', serif; font-size: 52px; font-weight: 300; color: var(--text-dark); letter-spacing: 2px; }
+  .time-unit { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-  .session-stats {
-    font-size: 12px;
-    color: var(--text-light);
-    letter-spacing: 1px;
-    text-align: center;
-    line-height: 1.8;
-  }
+  .session-stats { font-size: 12px; color: var(--text-light); text-align: center; line-height: 1.8; }
 
   .bottom-actions {
     position: fixed;
@@ -302,142 +246,45 @@
   }
 
   .btn-primary {
-    width: 100%;
-    padding: 17px;
-    border: none;
-    border-radius: 18px;
+    width: 100%; padding: 17px; border: none; border-radius: 18px;
     background: linear-gradient(135deg, #F2A58E, #E8796A);
-    color: white;
-    font-family: 'Noto Serif KR', serif;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35);
-    transition: transform 0.18s, box-shadow 0.18s;
-    letter-spacing: 1px;
-  }
-  .btn-primary:active {
-    transform: scale(0.97);
-    box-shadow: 0 3px 12px rgba(232, 121, 106, 0.25);
+    color: white; font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35); transition: transform 0.18s;
   }
   .btn-secondary {
-    width: 100%;
-    padding: 14px;
-    border: 2px solid var(--blush);
-    border-radius: 18px;
-    background: transparent;
-    color: var(--text-mid);
-    font-family: 'Gowun Dodum', sans-serif;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.18s;
-    letter-spacing: 1px;
+    width: 100%; padding: 14px; border: 2px solid var(--blush); border-radius: 18px;
+    background: transparent; color: var(--text-mid); font-family: 'Gowun Dodum', sans-serif;
+    font-size: 15px; cursor: pointer;
   }
-  .btn-secondary:active { background: var(--blush); }
+  .btn-primary:active, .btn-secondary:active { transform: scale(0.97); }
 
-  .stats-inline {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-light);
-    letter-spacing: 0.5px;
-    line-height: 1.7;
-    padding-top: 4px;
-  }
-
+  .stats-inline { text-align: center; font-size: 12px; color: var(--text-light); padding-top: 4px; }
   .hidden { display: none !important; }
 
   /* ===== DONE PAGE ===== */
-  .done-card {
-    background: white;
-    border-radius: 32px;
-    padding: 40px 32px;
-    box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12);
-    text-align: center;
-    width: 100%;
-  }
-  .done-icon {
-    font-size: 52px;
-    margin-bottom: 20px;
-    display: block;
-    animation: float 3s ease-in-out infinite;
-  }
-  .done-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 22px;
-    color: var(--text-dark);
-    font-weight: 600;
-    margin-bottom: 28px;
-    letter-spacing: 1px;
-  }
-  .done-stats {
-    background: var(--cream);
-    border-radius: 20px;
-    padding: 22px 24px;
-    margin-bottom: 24px;
-  }
-  .done-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--blush);
-  }
+  .done-card { background: white; border-radius: 32px; padding: 40px 32px; box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12); text-align: center; width: 100%; }
+  .done-icon { font-size: 52px; margin-bottom: 20px; display: block; animation: float 3s ease-in-out infinite; }
+  .done-title { font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--text-dark); font-weight: 600; margin-bottom: 28px; }
+  .done-stats { background: var(--cream); border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; }
+  .done-stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--blush); }
   .done-stat-row:last-child { border-bottom: none; }
-  .done-stat-label {
-    font-size: 15px;
-    color: var(--text-mid);
-    letter-spacing: 0.5px;
-  }
-  .done-stat-value {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 17px;
-    color: var(--deep-rose);
-    font-weight: 600;
-  }
-  .done-total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 2px solid var(--blush);
-  }
-  .done-total-label {
-    font-size: 14px;
-    color: var(--text-light);
-    letter-spacing: 1px;
-  }
-  .done-total-value {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 20px;
-    color: var(--warm-brown);
-    font-weight: 600;
-  }
-  .done-love {
-    font-size: 15px;
-    color: var(--warm-rose);
-    margin-top: 6px;
-    letter-spacing: 2px;
-    animation: pulse 2s ease-in-out infinite;
-  }
+  .done-stat-label { font-size: 15px; color: var(--text-mid); }
+  .done-stat-value { font-family: 'Noto Serif KR', serif; font-size: 17px; color: var(--deep-rose); font-weight: 600; }
+  .done-total-row { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 2px solid var(--blush); }
+  .done-total-label { font-size: 14px; color: var(--text-light); }
+  .done-total-value { font-family: 'Noto Serif KR', serif; font-size: 20px; color: var(--warm-brown); font-weight: 600; }
+  .done-love { font-size: 15px; color: var(--warm-rose); margin-top: 6px; animation: pulse 2s ease-in-out infinite; }
 
-  @keyframes ping {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(1.4); opacity: 0; }
-  }
-  .ping-ring {
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    border: 3px solid var(--warm-rose);
-    animation: ping 1.2s ease-out infinite;
-    display: none;
-  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .ping-ring { position: absolute; inset: -12px; border-radius: 50%; border: 3px solid var(--warm-rose); animation: ping 1.2s ease-out infinite; display: none; }
   .ping-ring.show { display: block; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.4); opacity: 0; } }
 </style>
 </head>
 <body>
 <div class="phone-wrap">
+  <div class="version-tag">v.1.0</div>
+  
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
 
@@ -451,11 +298,11 @@
     <div class="section-label">유축 시작 방향을<br>선택해 주세요</div>
 
     <div class="dir-btns">
-      <button class="dir-btn dir-btn-left" onclick="startTimer('left')">
+      <button class="dir-btn dir-btn-left" onclick="handleBtnClick(() => startTimer('left'))">
         왼쪽
         <span class="dir-btn-label">◀ LEFT</span>
       </button>
-      <button class="dir-btn dir-btn-right" onclick="startTimer('right')">
+      <button class="dir-btn dir-btn-right" onclick="handleBtnClick(() => startTimer('right'))">
         오른쪽
         <span class="dir-btn-label">RIGHT ▶</span>
       </button>
@@ -469,7 +316,8 @@
 
     <div class="footer-notice">
       ※ 브라우저를 켠 상태로 유지해주세요.<br>
-      ※ 스마트폰 무음 모드를 해제해주세요.
+      ※ 스마트폰 무음 모드를 해제해주세요.<br>
+      ※ 스마트폰 볼륨을 살짝 올려주세요.
     </div>
   </div>
 
@@ -496,12 +344,11 @@
 
     <div class="bottom-actions" id="timer-actions-container">
       <div id="running-actions">
-        <button class="btn-secondary" onclick="endSession()">종료하기</button>
+        <button class="btn-secondary" onclick="handleBtnClick(endSession)">종료하기</button>
       </div>
-      
       <div id="end-actions" class="hidden">
-        <button class="btn-primary" id="btn-opposite" onclick="startOpposite()">반대쪽 시작</button>
-        <button class="btn-secondary" style="margin-top:10px;" onclick="endSession()">전체 종료</button>
+        <button class="btn-primary" id="btn-opposite" onclick="handleBtnClick(startOpposite)">반대쪽 시작</button>
+        <button class="btn-secondary" style="margin-top:10px;" onclick="handleBtnClick(endSession)">전체 종료</button>
         <div class="stats-inline" id="stats-inline-text"></div>
       </div>
     </div>
@@ -513,9 +360,8 @@
       <div class="done-title">오늘도 수고하셨어요</div>
       <div class="done-stats" id="done-stats-area"></div>
       <div class="done-love">엄마 고마워요 ♥</div>
-      
       <div style="margin-top: 32px; width: 100%;">
-        <button class="btn-primary" onclick="resetApp()">처음으로</button>
+        <button class="btn-primary" onclick="handleBtnClick(resetApp)">처음으로</button>
       </div>
     </div>
   </div>
@@ -523,7 +369,6 @@
 
 <script>
   let state = {
-    firstSide: '',
     currentSide: '',
     durationMin: 5,
     timerInterval: null,
@@ -536,115 +381,53 @@
   let wakeLock = null;
   let audioCtx = null;
 
+  // 공통 버튼 핸들러: 소리 재생 + 액션 실행
+  function handleBtnClick(actionFunc) {
+    warmAudio();      // 오디오 활성화
+    playClickBeep();  // 클릭 비프음
+    if (actionFunc) actionFunc();
+  }
+
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
   async function requestWakeLock() {
-    try {
-      if ('wakeLock' in navigator) {
-        wakeLock = await navigator.wakeLock.request('screen');
-      }
-    } catch (err) { console.warn('WakeLock error:', err); }
+    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }
+    catch (err) { console.warn('WakeLock error:', err); }
   }
 
   function releaseWakeLock() {
-    if (wakeLock !== null) {
-      wakeLock.release();
-      wakeLock = null;
-    }
+    if (wakeLock !== null) { wakeLock.release(); wakeLock = null; }
   }
 
   function warmAudio() {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const silent = audioCtx.createGain();
-      silent.gain.value = 0;
-      osc.connect(silent);
-      silent.connect(audioCtx.destination);
-      osc.start(0); osc.stop(0.01); 
     } catch(e) {}
   }
 
-  function startTimer(side) {
-    warmAudio();
-    state.durationMin = parseInt(document.getElementById('duration-input').value) || 5;
-    state.currentSide = side;
-    
-    // UI 초기화
-    document.getElementById('running-actions').classList.remove('hidden');
-    document.getElementById('end-actions').classList.add('hidden');
-    document.getElementById('ping-ring').classList.remove('show');
-    
-    runTimer();
+  // 버튼 클릭 비프음 (짧고 명확한 소리)
+  function playClickBeep() {
+    try {
+      const ctx = audioCtx;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 660; // 약간 낮은 도#
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+      osc.start(); osc.stop(ctx.currentTime + 0.12);
+    } catch(e) {}
   }
 
-  function startOpposite() {
-    warmAudio();
-    state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
-    document.getElementById('running-actions').classList.remove('hidden');
-    document.getElementById('end-actions').classList.add('hidden');
-    document.getElementById('ping-ring').classList.remove('show');
-    runTimer();
-  }
-
-  function runTimer() {
-    const sideLabel = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
-    document.getElementById('timer-side-label').textContent = sideLabel;
-    showPage('page-timer');
-    requestWakeLock();
-
-    state.secondsLeft = state.durationMin * 60;
-    state.totalSeconds = state.durationMin * 60;
-
-    updateDisplay();
-    updateCircle(1);
-
-    if (state.timerInterval) clearInterval(state.timerInterval);
-
-    state.timerInterval = setInterval(() => {
-      state.secondsLeft--;
-      state.sessions[state.currentSide].seconds++; // 실제 진행된 초 기록
-      updateDisplay();
-      updateCircle(state.secondsLeft / state.totalSeconds);
-
-      if (state.secondsLeft <= 0) {
-        clearInterval(state.timerInterval);
-        state.timerInterval = null;
-        state.sessions[state.currentSide].count++; // 정해진 시간 완료 시에만 회수 증가
-        onTimerEnd();
-      }
-    }, 1000);
-  }
-
-  function updateDisplay() {
-    const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
-    const s = (state.secondsLeft % 60).toString().padStart(2, '0');
-    document.getElementById('time-display').textContent = `${m}:${s}`;
-    document.getElementById('session-stats').textContent = getStatsText();
-  }
-
-  function updateCircle(ratio) {
-    const offset = CIRCUMFERENCE * (1 - ratio);
-    const circle = document.getElementById('circle-prog');
-    circle.style.strokeDashoffset = offset;
-    circle.style.strokeDasharray = CIRCUMFERENCE;
-  }
-
-  function onTimerEnd() {
-    playAlarm();
-    document.getElementById('ping-ring').classList.add('show');
-    document.getElementById('running-actions').classList.add('hidden');
-    document.getElementById('end-actions').classList.remove('hidden');
-    document.getElementById('stats-inline-text').textContent = getStatsText();
-  }
-
+  // 타이머 종료 알람 (2회 반복)
   async function playAlarm() {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') await audioCtx.resume();
       const ctx = audioCtx;
       function beep(startTime) {
@@ -662,23 +445,74 @@
     } catch(e) {}
   }
 
+  function startTimer(side) {
+    state.durationMin = parseInt(document.getElementById('duration-input').value) || 5;
+    state.currentSide = side;
+    document.getElementById('running-actions').classList.remove('hidden');
+    document.getElementById('end-actions').classList.add('hidden');
+    document.getElementById('ping-ring').classList.remove('show');
+    runTimer();
+  }
+
+  function startOpposite() {
+    state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
+    document.getElementById('running-actions').classList.remove('hidden');
+    document.getElementById('end-actions').classList.add('hidden');
+    document.getElementById('ping-ring').classList.remove('show');
+    runTimer();
+  }
+
+  function runTimer() {
+    document.getElementById('timer-side-label').textContent = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
+    showPage('page-timer');
+    requestWakeLock();
+    state.secondsLeft = state.durationMin * 60;
+    state.totalSeconds = state.durationMin * 60;
+    updateDisplay();
+    updateCircle(1);
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => {
+      state.secondsLeft--;
+      state.sessions[state.currentSide].seconds++;
+      updateDisplay();
+      updateCircle(state.secondsLeft / state.totalSeconds);
+      if (state.secondsLeft <= 0) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+        state.sessions[state.currentSide].count++;
+        onTimerEnd();
+      }
+    }, 1000);
+  }
+
+  function updateDisplay() {
+    const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
+    const s = (state.secondsLeft % 60).toString().padStart(2, '0');
+    document.getElementById('time-display').textContent = `${m}:${s}`;
+    document.getElementById('session-stats').textContent = getStatsText();
+  }
+
+  function updateCircle(ratio) {
+    const offset = CIRCUMFERENCE * (1 - ratio);
+    document.getElementById('circle-prog').style.strokeDashoffset = offset;
+    document.getElementById('circle-prog').style.strokeDasharray = CIRCUMFERENCE;
+  }
+
+  function onTimerEnd() {
+    playAlarm();
+    document.getElementById('ping-ring').classList.add('show');
+    document.getElementById('running-actions').classList.add('hidden');
+    document.getElementById('end-actions').classList.remove('hidden');
+    document.getElementById('stats-inline-text').textContent = getStatsText();
+  }
+
   function getStatsText() {
-    const L = state.sessions.left;
-    const R = state.sessions.right;
-    // 실제 진행된 초를 기반으로 분 단위 표시 (최소 1초라도 했으면 올림 처리하거나 버림 처리 선택 가능 - 여기선 버림)
+    const L = state.sessions.left; const R = state.sessions.right;
     return `왼쪽 ${Math.floor(L.seconds/60)}분  ·  오른쪽 ${Math.floor(R.seconds/60)}분`;
   }
 
   function endSession() {
-    // 만약 타이머가 도는 중에 종료를 눌렀다면, 해당 회차도 카운트에 포함할지 결정
-    // 여기서는 10초 이상 진행했을 때만 '회수'로 인정하도록 보완 가능하지만, 일단 시간은 무조건 합산됩니다.
-    if (state.timerInterval) {
-        clearInterval(state.timerInterval);
-        state.timerInterval = null;
-        // 중간에 종료해도 30초 이상 했으면 1회로 간주하고 싶다면 아래 주석 해제
-        // if (state.totalSeconds - state.secondsLeft > 10) state.sessions[state.currentSide].count++;
-    }
-    
+    if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
     releaseWakeLock();
     buildDoneStats();
     showPage('page-done');
@@ -688,7 +522,6 @@
     state.sessions.left = { count: 0, seconds: 0 };
     state.sessions.right = { count: 0, seconds: 0 };
     state.currentSide = '';
-    state.secondsLeft = 0;
     if (state.timerInterval) clearInterval(state.timerInterval);
     document.getElementById('ping-ring').classList.remove('show');
     updateCircle(1);
@@ -696,40 +529,26 @@
   }
 
   function buildDoneStats() {
-    const L = state.sessions.left;
-    const R = state.sessions.right;
-    const totalMin = Math.floor((L.seconds + R.seconds) / 60);
-    const totalSecRem = (L.seconds + R.seconds) % 60;
-
-    const area = document.getElementById('done-stats-area');
-    area.innerHTML = `
-      <div class="done-stat-row">
-        <span class="done-stat-label">◀ 왼쪽</span>
-        <span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span>
-      </div>
-      <div class="done-stat-row">
-        <span class="done-stat-label">오른쪽 ▶</span>
-        <span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span>
-      </div>
-      <div class="done-total-row">
-        <span class="done-total-label">총 유축 시간</span>
-        <span class="done-total-value">${totalMin}분 ${totalSecRem}초</span>
-      </div>
+    const L = state.sessions.left; const R = state.sessions.right;
+    const totalS = L.seconds + R.seconds;
+    document.getElementById('done-stats-area').innerHTML = `
+      <div class="done-stat-row"><span class="done-stat-label">◀ 왼쪽</span><span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span></div>
+      <div class="done-stat-row"><span class="done-stat-label">오른쪽 ▶</span><span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span></div>
+      <div class="done-total-row"><span class="done-total-label">총 유축 시간</span><span class="done-total-value">${Math.floor(totalS/60)}분 ${totalS%60}초</span></div>
     `;
+  }
+
+  // 서비스 워커 등록 (PWA 핵심)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+    });
   }
 
   document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   });
-  // 서비스 워커 등록
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('서비스 워커 등록 성공!', reg))
-        .catch(err => console.log('등록 실패ㅠ', err));
-    });
-  }
 </script>
 </body>
 </html>
