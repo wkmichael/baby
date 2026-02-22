@@ -620,34 +620,40 @@ display: none;
     document.getElementById('timer-actions').classList.remove('hidden');
   }
 
-  // ── Wake Lock: 타이머 작동 중 화면이 꺼지지 않도록 방지 ──
-  let wakeLock = null;
+  // ── NoSleep: 무음 video loop으로 화면 꺼짐 방지 ──
+  let noSleepVideo = null;
 
-  async function requestWakeLock() {
-    if ('wakeLock' in navigator) {
-      try {
-        wakeLock = await navigator.wakeLock.request('screen');
-        // 화면이 잠깐 꺼졌다가 돌아오면(visibility change) 자동 재요청
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-      } catch (e) {
-        console.warn('Wake Lock 요청 실패:', e);
-      }
+  function createNoSleepVideo() {
+    if (noSleepVideo) return;
+    // 1x1 투명 WebM (base64) — 재생 중이면 iOS/Android가 화면을 끄지 않음
+    const src = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggFGTbuMU6uEHlO7a1OsggGETbuMU6uEHxO7a1OsggHITbuMU6uEIDO7a1OsggHlTbuMU6uEIXO7a1OsggHyTbuMU6uEIlO7a1OsggICTbuMU6uEIvO7a1OsggIPTbuMU6uEI3O7a1OsggIUTbuMU6uEJBO7a1OsggIZTbuMU6uEJFO7a1OsggIeTbuMU6uEJJO7a1OsggIjTbuMU6uEJNO7a1OsggIoTbuMU6uEJRO7a1OsggItTbuMU6uEJVO7a1OsggIyTbuMU6uEJZO7a1OsggI3TbuMU6uEJdO7a1OsggI8TbuMU6uEJhO7a1OsggJBTbuMU6uEJlO7a1OsggJGTbuMU6uEJpO7a1OsggJLTbuMU6uEJtO7a1OsggJQTbuMU6uEJxO7a1OsggJVTbuMU6uEJ1O7a1OsggJaTbuMU6uEJ5O7a1OsggJfTbuMU6uEJ9O7a1OsggJkSsGBAlvBieyBgaGBh6+gQGIgQAA';
+    noSleepVideo = document.createElement('video');
+    noSleepVideo.setAttribute('loop', '');
+    noSleepVideo.setAttribute('playsinline', '');
+    noSleepVideo.setAttribute('muted', '');
+    noSleepVideo.setAttribute('webkit-playsinline', '');
+    noSleepVideo.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;';
+    noSleepVideo.src = src;
+    document.body.appendChild(noSleepVideo);
+  }
+
+  function noSleepEnable() {
+    createNoSleepVideo();
+    noSleepVideo && noSleepVideo.play().catch(() => {});
+  }
+
+  function noSleepDisable() {
+    if (noSleepVideo) {
+      noSleepVideo.pause();
     }
+  }
+
+  function requestWakeLock() {
+    noSleepEnable();
   }
 
   function releaseWakeLock() {
-    if (wakeLock) {
-      wakeLock.release();
-      wakeLock = null;
-    }
-    document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }
-
-  async function handleVisibilityChange() {
-    // 탭이 다시 보이게 되면 Wake Lock 재요청 (OS가 자동 해제하기 때문)
-    if (document.visibilityState === 'visible' && state.timerInterval) {
-      await requestWakeLock();
-    }
+    noSleepDisable();
   }
 
   // ── AudioContext: iOS requires it to be created & resumed inside a user gesture.
