@@ -191,6 +191,16 @@
   }
   .time-input::-webkit-inner-spin-button { display: none; }
 
+  /* 안내 문구 스타일 */
+  .footer-notice {
+    margin-top: auto;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.8;
+  }
+
   /* ===== TIMER PAGE ===== */
   .timer-header {
     text-align: center;
@@ -453,6 +463,11 @@
       <input type="number" class="time-input" id="duration-input" value="5" min="1" max="60">
       <span class="time-label">분</span>
     </div>
+
+    <div class="footer-notice">
+      ※ 브라우저를 켠 상태로 유지해주세요.<br>
+      ※ 스마트폰 무음 모드를 해제해주세요.
+    </div>
   </div>
 
   <div class="page" id="page-timer">
@@ -476,10 +491,16 @@
 
     <div class="session-stats" id="session-stats"></div>
 
-    <div class="bottom-actions hidden" id="timer-actions">
-      <button class="btn-primary" id="btn-opposite" onclick="startOpposite()">반대쪽 시작</button>
-      <button class="btn-secondary" onclick="endSession()">종료</button>
-      <div class="stats-inline" id="stats-inline-text"></div>
+    <div class="bottom-actions" id="timer-actions-container">
+      <div id="running-actions">
+        <button class="btn-secondary" onclick="endSession()">종료하기</button>
+      </div>
+      
+      <div id="end-actions" class="hidden">
+        <button class="btn-primary" id="btn-opposite" onclick="startOpposite()">반대쪽 시작</button>
+        <button class="btn-secondary" style="margin-top:10px;" onclick="endSession()">전체 종료</button>
+        <div class="stats-inline" id="stats-inline-text"></div>
+      </div>
     </div>
   </div>
 
@@ -510,7 +531,7 @@
 
   const CIRCUMFERENCE = 2 * Math.PI * 110;
   let wakeLock = null;
-  let audioCtx = null; // 오디오 컨텍스트 전역 관리
+  let audioCtx = null;
 
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -522,9 +543,7 @@
       if ('wakeLock' in navigator) {
         wakeLock = await navigator.wakeLock.request('screen');
       }
-    } catch (err) {
-      console.warn('WakeLock error:', err);
-    }
+    } catch (err) { console.warn('WakeLock error:', err); }
   }
 
   function releaseWakeLock() {
@@ -534,41 +553,37 @@
     }
   }
 
-  // 오디오 초기화 및 잠금 해제 (사용자 클릭 시 매번 호출)
   function warmAudio() {
     try {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      
-      // 들리지 않는 아주 짧은 무음을 재생하여 브라우저의 오디오 하드웨어를 깨워둡니다.
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const silent = audioCtx.createGain();
       silent.gain.value = 0;
       osc.connect(silent);
       silent.connect(audioCtx.destination);
-      osc.start(0);
-      osc.stop(0.01); 
-    } catch(e) {
-      console.warn('Audio warming error:', e);
-    }
+      osc.start(0); osc.stop(0.01); 
+    } catch(e) {}
   }
 
   function startTimer(side) {
     warmAudio();
     state.durationMin = parseInt(document.getElementById('duration-input').value) || 5;
-    state.firstSide = side;
     state.currentSide = side;
+    
+    // UI 초기화
+    document.getElementById('running-actions').classList.remove('hidden');
+    document.getElementById('end-actions').classList.add('hidden');
+    document.getElementById('ping-ring').classList.remove('show');
+    
     runTimer();
   }
 
   function startOpposite() {
     warmAudio();
     state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
-    document.getElementById('timer-actions').classList.add('hidden');
+    document.getElementById('running-actions').classList.remove('hidden');
+    document.getElementById('end-actions').classList.add('hidden');
     document.getElementById('ping-ring').classList.remove('show');
     runTimer();
   }
@@ -589,14 +604,14 @@
 
     state.timerInterval = setInterval(() => {
       state.secondsLeft--;
-      state.sessions[state.currentSide].seconds++;
+      state.sessions[state.currentSide].seconds++; // 실제 진행된 초 기록
       updateDisplay();
       updateCircle(state.secondsLeft / state.totalSeconds);
 
       if (state.secondsLeft <= 0) {
         clearInterval(state.timerInterval);
         state.timerInterval = null;
-        state.sessions[state.currentSide].count++;
+        state.sessions[state.currentSide].count++; // 정해진 시간 완료 시에만 회수 증가
         onTimerEnd();
       }
     }, 1000);
@@ -611,60 +626,56 @@
 
   function updateCircle(ratio) {
     const offset = CIRCUMFERENCE * (1 - ratio);
-    document.getElementById('circle-prog').style.strokeDashoffset = offset;
-    document.getElementById('circle-prog').style.strokeDasharray = CIRCUMFERENCE;
+    const circle = document.getElementById('circle-prog');
+    circle.style.strokeDashoffset = offset;
+    circle.style.strokeDasharray = CIRCUMFERENCE;
   }
 
   function onTimerEnd() {
-    playAlarm(); // 알람 호출
+    playAlarm();
     document.getElementById('ping-ring').classList.add('show');
+    document.getElementById('running-actions').classList.add('hidden');
+    document.getElementById('end-actions').classList.remove('hidden');
     document.getElementById('stats-inline-text').textContent = getStatsText();
-    document.getElementById('timer-actions').classList.remove('hidden');
   }
 
-  // 알람 재생 (상태 체크 강화)
   async function playAlarm() {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // 컨텍스트가 멈춰있다면(수 분이 지나서) 다시 깨웁니다.
-      if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-      }
-      
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
       const ctx = audioCtx;
       function beep(startTime) {
-        const osc  = ctx.createOscillator();
+        const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880; osc.type = 'sine';
         gain.gain.setValueAtTime(0, startTime);
         gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
         gain.gain.setValueAtTime(0.8, startTime + 0.35);
         gain.gain.linearRampToValueAtTime(0, startTime + 0.55);
-        osc.start(startTime);
-        osc.stop(startTime + 0.6);
+        osc.start(startTime); osc.stop(startTime + 0.6);
       }
-      
-      // 즉시 1회, 0.75초 후 1회 울림
-      beep(ctx.currentTime);
-      beep(ctx.currentTime + 0.75);
-    } catch(e) {
-      console.warn('PlayAlarm error:', e);
-    }
+      beep(ctx.currentTime); beep(ctx.currentTime + 0.75);
+    } catch(e) {}
   }
 
   function getStatsText() {
     const L = state.sessions.left;
     const R = state.sessions.right;
-    return `왼쪽 ${L.count}회(${Math.floor(L.seconds/60)}분)  ·  오른쪽 ${R.count}회(${Math.floor(R.seconds/60)}분)`;
+    // 실제 진행된 초를 기반으로 분 단위 표시 (최소 1초라도 했으면 올림 처리하거나 버림 처리 선택 가능 - 여기선 버림)
+    return `왼쪽 ${Math.floor(L.seconds/60)}분  ·  오른쪽 ${Math.floor(R.seconds/60)}분`;
   }
 
   function endSession() {
-    clearInterval(state.timerInterval);
-    state.timerInterval = null;
+    // 만약 타이머가 도는 중에 종료를 눌렀다면, 해당 회차도 카운트에 포함할지 결정
+    // 여기서는 10초 이상 진행했을 때만 '회수'로 인정하도록 보완 가능하지만, 일단 시간은 무조건 합산됩니다.
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+        // 중간에 종료해도 30초 이상 했으면 1회로 간주하고 싶다면 아래 주석 해제
+        // if (state.totalSeconds - state.secondsLeft > 10) state.sessions[state.currentSide].count++;
+    }
+    
     releaseWakeLock();
     buildDoneStats();
     showPage('page-done');
@@ -673,15 +684,11 @@
   function resetApp() {
     state.sessions.left = { count: 0, seconds: 0 };
     state.sessions.right = { count: 0, seconds: 0 };
-    state.firstSide = '';
     state.currentSide = '';
     state.secondsLeft = 0;
-    
     if (state.timerInterval) clearInterval(state.timerInterval);
-    document.getElementById('timer-actions').classList.add('hidden');
     document.getElementById('ping-ring').classList.remove('show');
     updateCircle(1);
-    
     showPage('page-start');
   }
 
@@ -689,32 +696,28 @@
     const L = state.sessions.left;
     const R = state.sessions.right;
     const totalMin = Math.floor((L.seconds + R.seconds) / 60);
+    const totalSecRem = (L.seconds + R.seconds) % 60;
 
     const area = document.getElementById('done-stats-area');
     area.innerHTML = `
       <div class="done-stat-row">
         <span class="done-stat-label">◀ 왼쪽</span>
-        <span class="done-stat-value">${L.count}회 · ${Math.floor(L.seconds/60)}분</span>
+        <span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span>
       </div>
       <div class="done-stat-row">
         <span class="done-stat-label">오른쪽 ▶</span>
-        <span class="done-stat-value">${R.count}회 · ${Math.floor(R.seconds/60)}분</span>
+        <span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span>
       </div>
       <div class="done-total-row">
         <span class="done-total-label">총 유축 시간</span>
-        <span class="done-total-value">${totalMin}분</span>
+        <span class="done-total-value">${totalMin}분 ${totalSecRem}초</span>
       </div>
     `;
   }
 
   document.addEventListener('visibilitychange', async () => {
-    if (wakeLock !== null && document.visibilityState === 'visible') {
-      await requestWakeLock();
-    }
-    // 앱이 백그라운드에 있다가 다시 켜졌을 때 오디오 컨텍스트도 체크합니다.
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   });
 </script>
 </body>
