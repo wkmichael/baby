@@ -3,7 +3,7 @@
   "name": "소중한 시간: 유축 타이머",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/14455/14455410.png",
+      "src": "edit_icon_pump_timer.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
