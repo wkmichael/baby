@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>유축 타이머</title>
 
 <link rel="manifest" href="manifest.json">
@@ -35,7 +35,11 @@
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    -webkit-user-select: none; /* 모바일 더블탭 텍스트 선택 방지 */
+    user-select: none;
   }
+
+  input { user-select: auto; }
 
   .phone-wrap {
     width: 100%;
@@ -215,14 +219,14 @@
   }
 
   /* ===== TIMER PAGE ===== */
-  #page-timer { 
-    padding-bottom: 160px; /* 하단 버튼에 가려지지 않도록 여백 추가 */
+  #page-timer {
+    padding-bottom: 140px; /* 텍스트가 하단 버튼에 가려지지 않도록 여백 확보 */
   }
   .timer-header { text-align: center; margin-bottom: 36px; }
   .timer-direction { font-size: 13px; color: var(--text-light); letter-spacing: 2px; margin-bottom: 6px; }
   .timer-side { font-family: 'Noto Serif KR', serif; font-size: 26px; color: var(--text-dark); font-weight: 600; }
 
-  .circle-wrap { position: relative; width: 240px; height: 240px; margin-bottom: 48px; }
+  .circle-wrap { position: relative; width: 240px; height: 240px; margin-bottom: 40px; }
   .circle-bg { position: absolute; inset: 0; border-radius: 50%; background: white; box-shadow: 0 12px 40px rgba(196, 97, 74, 0.15), inset 0 0 0 2px #F5E0D8; }
   .circle-svg { position: absolute; inset: 0; transform: rotate(-90deg); }
   .circle-track { fill: none; stroke: #F5E0D8; stroke-width: 8; }
@@ -231,15 +235,13 @@
   .time-display { font-family: 'Noto Serif KR', serif; font-size: 52px; font-weight: 300; color: var(--text-dark); letter-spacing: 2px; }
   .time-unit { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-  /* 상태 문구 위치 및 여백 수정 */
   .session-stats {
     font-size: 13px;
     color: var(--text-mid);
     text-align: center;
     line-height: 1.8;
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 10px;
-    /*background: rgba(255, 255, 255, 0.5); /* 가독성을 위해 옅은 배경 추가 */
     border-radius: 12px;
     width: 100%;
     max-width: 320px;
@@ -276,19 +278,16 @@
   .stats-inline { text-align: center; font-size: 12px; color: var(--text-light); padding-top: 4px; }
   .hidden { display: none !important; }
 
-  /* 버튼 가로 배치를 위한 스타일 및 여백 조정 */
   .btn-row {
     display: flex;
     gap: 12px;
     width: 100%;
     margin-bottom: 10px;
   }
-  .btn-row button {
-    flex: 1;
-  }
+  .btn-row button { flex: 1; }
   
   /* ===== DONE PAGE ===== */
-  .done-card { background: white; border-radius: 32px; padding: 40px 32px; box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12); text-align: center; width: 100%; }
+  .done-card { background: white; border-radius: 32px; padding: 40px 32px; box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12); text-align: center; width: 100%; z-index: 2; }
   .done-icon { font-size: 52px; margin-bottom: 20px; display: block; animation: float 3s ease-in-out infinite; }
   .done-title { font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--text-dark); font-weight: 600; margin-bottom: 28px; }
   .done-stats { background: var(--cream); border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; }
@@ -309,11 +308,12 @@
 </head>
 <body>
 <div class="phone-wrap">
-  <div class="version-tag">v.1.0</div>
+  <div class="version-tag">v.1.1</div>
   
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
 
+  <!-- 시작 페이지 -->
   <div class="page active" id="page-start">
     <div class="logo-area">
       <span class="logo-icon">🤱</span>
@@ -347,6 +347,7 @@
     </div>
   </div>
 
+  <!-- 타이머 페이지 -->
   <div class="page" id="page-timer">
     <div class="timer-header">
       <div class="timer-direction">현재 유축 중</div>
@@ -383,8 +384,9 @@
         <div class="stats-inline" id="stats-inline-text"></div>
       </div>
     </div>
-  </div> 
+  </div> <!-- !! 타이머 페이지 종료 태그 추가됨 !! -->
 
+  <!-- 완료 페이지 -->
   <div class="page" id="page-done">
     <div class="done-card">
       <span class="done-icon">💕</span>
@@ -399,44 +401,41 @@
 </div>
 
 <script>
+  // 상태 관리 및 DOM 요소 캐싱
+  const DOM = {};
   let state = {
     currentSide: '',
     durationMin: 5,
     timerInterval: null,
     secondsLeft: 0,
     totalSeconds: 0,
-    isPaused: false, // 일시정지 상태 추적
+    isPaused: false,
     sessions: { left: { count: 0, seconds: 0 }, right: { count: 0, seconds: 0 } }
   };
-
-  // 2. 일시정지 토글 함수 추가
-  function togglePause() {
-    const pauseBtn = document.getElementById('btn-pause');
-    if (!state.isPaused) {
-      state.isPaused = true;
-      clearInterval(state.timerInterval);
-      state.timerInterval = null;
-      pauseBtn.textContent = '다시 시작';
-      releaseWakeLock();
-    } else {
-      state.isPaused = false;
-      pauseBtn.textContent = '일시정지';
-      requestWakeLock();
-      startInterval();
-    }
-  }
-
-  
 
   const CIRCUMFERENCE = 2 * Math.PI * 110;
   let wakeLock = null;
   let audioCtx = null;
 
-  // 알림 권한 요청 및 전송 로직
+  window.addEventListener('DOMContentLoaded', () => {
+    // DOM 캐싱 (성능 최적화)
+    DOM.durationInput = document.getElementById('duration-input');
+    DOM.timerSideLabel = document.getElementById('timer-side-label');
+    DOM.timeDisplay = document.getElementById('time-display');
+    DOM.circleProg = document.getElementById('circle-prog');
+    DOM.sessionStats = document.getElementById('session-stats');
+    DOM.runningActions = document.getElementById('running-actions');
+    DOM.endActions = document.getElementById('end-actions');
+    DOM.pingRing = document.getElementById('ping-ring');
+    DOM.btnPause = document.getElementById('btn-pause');
+    DOM.statsInlineText = document.getElementById('stats-inline-text');
+    DOM.doneStatsArea = document.getElementById('done-stats-area');
+
+    requestNotificationPermission();
+  });
+
   function requestNotificationPermission() {
-    if ("Notification" in window) {
-      Notification.requestPermission();
-    }
+    if ("Notification" in window) Notification.requestPermission();
   }
   
   function sendNotification() {
@@ -444,22 +443,17 @@
       navigator.serviceWorker.ready.then((registration) => {
         registration.showNotification("타이머 완료!", {
           body: `${state.currentSide === 'left' ? '왼쪽' : '오른쪽'} 유축이 끝났습니다.`,
-          icon: "https://cdn-icons-png.flaticon.com/512/1791/1791171.png", // 앱 아이콘
+          icon: "edit_icon_pump_timer.png",
           vibrate: [200, 100, 200],
           tag: "timer-done"
         });
       });
     }
   }
-  
-  // 페이지 로드 시 또는 첫 버튼 클릭 시 권한 요청
-  window.addEventListener('load', requestNotificationPermission);
 
-
-  // 공통 버튼 핸들러: 소리 재생 + 액션 실행
   function handleBtnClick(actionFunc) {
-    warmAudio();      // 오디오 활성화
-    playClickBeep();  // 클릭 비프음
+    warmAudio();
+    playClickBeep();
     if (actionFunc) actionFunc();
   }
 
@@ -484,14 +478,13 @@
     } catch(e) {}
   }
 
-  // 버튼 클릭 비프음 (짧고 명확한 소리)
   function playClickBeep() {
     try {
       const ctx = audioCtx;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 660; // 약간 낮은 도#
+      osc.frequency.value = 660;
       osc.type = 'sine';
       gain.gain.setValueAtTime(0, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
@@ -500,7 +493,6 @@
     } catch(e) {}
   }
 
-  // 타이머 종료 알람 (2회 반복)
   async function playAlarm() {
     try {
       if (audioCtx.state === 'suspended') await audioCtx.resume();
@@ -520,31 +512,45 @@
     } catch(e) {}
   }
 
+  function togglePause() {
+    if (!state.isPaused) {
+      state.isPaused = true;
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+      DOM.btnPause.textContent = '다시 시작';
+      releaseWakeLock();
+    } else {
+      state.isPaused = false;
+      DOM.btnPause.textContent = '일시정지';
+      requestWakeLock();
+      startInterval();
+    }
+  }
+
   function startTimer(side) {
-    state.durationMin = parseInt(document.getElementById('duration-input').value) || 5;
+    state.durationMin = parseInt(DOM.durationInput.value) || 5;
     state.currentSide = side;
-    document.getElementById('running-actions').classList.remove('hidden');
-    document.getElementById('end-actions').classList.add('hidden');
-    document.getElementById('ping-ring').classList.remove('show');
+    DOM.runningActions.classList.remove('hidden');
+    DOM.endActions.classList.add('hidden');
+    DOM.pingRing.classList.remove('show');
     runTimer();
   }
-// 4. 반대쪽 시작 함수 수정 (기존 runTimer를 호출하므로 초기화 포함됨)
+
   function startOpposite() {
     state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
-    document.getElementById('running-actions').classList.remove('hidden');
-    document.getElementById('end-actions').classList.add('hidden');
-    document.getElementById('ping-ring').classList.remove('show');
+    DOM.runningActions.classList.remove('hidden');
+    DOM.endActions.classList.add('hidden');
+    DOM.pingRing.classList.remove('show');
     runTimer();
   }
 
   function runTimer() {
-    document.getElementById('timer-side-label').textContent = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
+    DOM.timerSideLabel.textContent = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
     showPage('page-timer');
     requestWakeLock();
 
-    // 일시정지 상태 초기화
     state.isPaused = false;
-    document.getElementById('btn-pause').textContent = '일시정지';
+    DOM.btnPause.textContent = '일시정지';
 
     state.secondsLeft = state.durationMin * 60;
     state.totalSeconds = state.durationMin * 60;
@@ -554,7 +560,6 @@
     startInterval();
   }
 
-  // 인터벌 실행 로직
   function startInterval() {
     if (state.timerInterval) clearInterval(state.timerInterval);
     state.timerInterval = setInterval(() => {
@@ -565,7 +570,7 @@
       if (state.secondsLeft <= 0) {
         clearInterval(state.timerInterval);
         state.timerInterval = null;
-        state.sessions[state.currentSide].count++; // 회수 증가
+        state.sessions[state.currentSide].count++;
         onTimerEnd();
       }
     }, 1000);
@@ -574,26 +579,23 @@
   function updateDisplay() {
     const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
     const s = (state.secondsLeft % 60).toString().padStart(2, '0');
-    document.getElementById('time-display').textContent = `${m}:${s}`;
-    
-    // 이 부분이 호출될 때 횟수가 포함된 텍스트가 갱신됩니다.
-    document.getElementById('session-stats').textContent = getStatsText();
+    DOM.timeDisplay.textContent = `${m}:${s}`;
+    DOM.sessionStats.textContent = getStatsText();
   }
 
   function updateCircle(ratio) {
     const offset = CIRCUMFERENCE * (1 - ratio);
-    document.getElementById('circle-prog').style.strokeDashoffset = offset;
-    document.getElementById('circle-prog').style.strokeDasharray = CIRCUMFERENCE;
+    DOM.circleProg.style.strokeDashoffset = offset;
+    DOM.circleProg.style.strokeDasharray = CIRCUMFERENCE;
   }
 
   function onTimerEnd() {
-    playAlarm(); // 기존 사운드 유지
-    sendNotification(); // [추가] 시스템 알림 발송
-    
-    document.getElementById('ping-ring').classList.add('show');
-    document.getElementById('running-actions').classList.add('hidden');
-    document.getElementById('end-actions').classList.remove('hidden');
-    document.getElementById('stats-inline-text').textContent = getStatsText();
+    playAlarm();
+    sendNotification();
+    DOM.pingRing.classList.add('show');
+    DOM.runningActions.classList.add('hidden');
+    DOM.endActions.classList.remove('hidden');
+    DOM.statsInlineText.textContent = getStatsText();
   }
 
   function getStatsText() {
@@ -614,7 +616,7 @@
     state.sessions.right = { count: 0, seconds: 0 };
     state.currentSide = '';
     if (state.timerInterval) clearInterval(state.timerInterval);
-    document.getElementById('ping-ring').classList.remove('show');
+    DOM.pingRing.classList.remove('show');
     updateCircle(1);
     showPage('page-start');
   }
@@ -622,14 +624,14 @@
   function buildDoneStats() {
     const L = state.sessions.left; const R = state.sessions.right;
     const totalS = L.seconds + R.seconds;
-    document.getElementById('done-stats-area').innerHTML = `
+    DOM.doneStatsArea.innerHTML = `
       <div class="done-stat-row"><span class="done-stat-label">◀ 왼쪽</span><span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span></div>
       <div class="done-stat-row"><span class="done-stat-label">오른쪽 ▶</span><span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span></div>
       <div class="done-total-row"><span class="done-total-label">총 유축 시간</span><span class="done-total-value">${Math.floor(totalS/60)}분 ${totalS%60}초</span></div>
     `;
   }
 
-  // 서비스 워커 등록 (PWA 핵심)
+  // PWA 서비스 워커
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
