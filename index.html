@@ -261,6 +261,17 @@
   .stats-inline { text-align: center; font-size: 12px; color: var(--text-light); padding-top: 4px; }
   .hidden { display: none !important; }
 
+  /* 버튼 가로 배치를 위한 스타일 */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .btn-row button {
+    flex: 1; /* 버튼이 동일한 비율로 가로를 채움 */
+  }
+  
   /* ===== DONE PAGE ===== */
   .done-card { background: white; border-radius: 32px; padding: 40px 32px; box-shadow: 0 16px 50px rgba(196, 97, 74, 0.12); text-align: center; width: 100%; }
   .done-icon { font-size: 52px; margin-bottom: 20px; display: block; animation: float 3s ease-in-out infinite; }
@@ -344,6 +355,10 @@
 
     <div class="bottom-actions" id="timer-actions-container">
       <div id="running-actions">
+        <div class="btn-row">
+          <button class="btn-secondary" id="btn-pause" onclick="handleBtnClick(togglePause)">일시정지</button>
+          <button class="btn-primary" onclick="handleBtnClick(startOpposite)">반대쪽 시작</button>
+        </div>
         <button class="btn-secondary" onclick="handleBtnClick(endSession)">종료하기</button>
       </div>
       <div id="end-actions" class="hidden">
@@ -374,8 +389,31 @@
     timerInterval: null,
     secondsLeft: 0,
     totalSeconds: 0,
+    isPaused: false, // 일시정지 상태 추적
     sessions: { left: { count: 0, seconds: 0 }, right: { count: 0, seconds: 0 } }
   };
+
+  // 2. 일시정지 토글 함수 추가
+  function togglePause() {
+    const pauseBtn = document.getElementById('btn-pause');
+    
+    if (!state.isPaused) {
+      // 일시정지 실행
+      state.isPaused = true;
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+      pauseBtn.textContent = '다시 시작';
+      releaseWakeLock(); // 정지 시 잠금방지 해제
+    } else {
+      // 타이머 재개
+      state.isPaused = false;
+      pauseBtn.textContent = '일시정지';
+      requestWakeLock(); // 재개 시 다시 잠금방지
+      startInterval();   // 인터벌 다시 시작
+    }
+  }
+
+  
 
   const CIRCUMFERENCE = 2 * Math.PI * 110;
   let wakeLock = null;
@@ -477,7 +515,7 @@
     document.getElementById('ping-ring').classList.remove('show');
     runTimer();
   }
-
+// 4. 반대쪽 시작 함수 수정 (기존 runTimer를 호출하므로 초기화 포함됨)
   function startOpposite() {
     state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
     document.getElementById('running-actions').classList.remove('hidden');
@@ -490,10 +528,21 @@
     document.getElementById('timer-side-label').textContent = state.currentSide === 'left' ? '왼쪽 가슴' : '오른쪽 가슴';
     showPage('page-timer');
     requestWakeLock();
+
+    // 일시정지 상태 초기화
+    state.isPaused = false;
+    document.getElementById('btn-pause').textContent = '일시정지';
+
     state.secondsLeft = state.durationMin * 60;
     state.totalSeconds = state.durationMin * 60;
     updateDisplay();
     updateCircle(1);
+    
+    startInterval();
+  }
+
+  // 인터벌 실행 로직
+  function startInterval() {
     if (state.timerInterval) clearInterval(state.timerInterval);
     state.timerInterval = setInterval(() => {
       state.secondsLeft--;
