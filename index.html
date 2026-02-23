@@ -35,7 +35,7 @@
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
-    -webkit-user-select: none; /* 모바일 더블탭 텍스트 선택 방지 */
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -58,7 +58,7 @@
     top: 20px;
     left: 20px;
     font-size: 22px;
-    z-index: 10;
+    z-index: 20;
     cursor: pointer;
     transition: transform 0.2s;
     user-select: none;
@@ -67,12 +67,12 @@
     transform: scale(0.9);
   }
 
-  /* 볼륨 조절 버튼 및 팝업 (BGM 버튼 우측에 배치) */
+  /* 좌상단 볼륨 조절 버튼 및 팝업 */
   .vol-wrap {
     position: absolute;
     top: 20px;
-    left: 60px; /* BGM 버튼 옆 */
-    z-index: 10;
+    left: 60px; /* BGM 버튼 바로 우측 */
+    z-index: 20;
   }
   .vol-btn {
     font-size: 22px;
@@ -91,12 +91,14 @@
     transform-origin: top;
     background: white;
     border-radius: 12px;
-    padding: 12px 0;
+    width: 40px; 
+    height: 130px;
     box-shadow: 0 4px 16px rgba(196, 97, 74, 0.2);
     opacity: 0;
     transition: transform 0.2s ease, opacity 0.2s ease;
     pointer-events: none;
     display: flex;
+    align-items: center;
     justify-content: center;
   }
   .vol-popup.show {
@@ -105,14 +107,20 @@
     pointer-events: auto;
   }
   
-  /* 세로형 슬라이더 */
-  input[type=range][orient=vertical] {
-    appearance: slider-vertical;
-    -webkit-appearance: slider-vertical;
-    width: 20px;
-    height: 90px;
+  /* 가로 슬라이더를 -90도 회전시켜 세로로 완벽 호환 */
+  .slider-container {
+    width: 100px;
+    height: 20px;
+    transform: rotate(-90deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #vol-slider {
+    width: 100px;
+    margin: 0;
     cursor: pointer;
-    margin: 0 10px;
+    accent-color: var(--warm-rose); /* 슬라이더 색상 (지원 브라우저 한정) */
   }
 
   /* 우상단 버전 텍스트 */
@@ -165,126 +173,32 @@
   }
 
   /* ===== START PAGE ===== */
-  .logo-area {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  .logo-icon {
-    font-size: 44px;
-    margin-bottom: 10px;
-    display: block;
-    animation: float 3s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-  .logo-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 22px;
-    color: var(--text-dark);
-    letter-spacing: 2px;
-    font-weight: 600;
-  }
-  .logo-sub {
-    font-size: 13px;
-    color: var(--text-light);
-    margin-top: 6px;
-    letter-spacing: 1px;
-  }
+  .logo-area { text-align: center; margin-bottom: 48px; }
+  .logo-icon { font-size: 44px; margin-bottom: 10px; display: block; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .logo-title { font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--text-dark); letter-spacing: 2px; font-weight: 600; }
+  .logo-sub { font-size: 13px; color: var(--text-light); margin-top: 6px; letter-spacing: 1px; }
+  .section-label { font-family: 'Noto Serif KR', serif; font-size: 17px; color: var(--text-dark); text-align: center; margin-bottom: 32px; font-weight: 400; line-height: 1.6; }
 
-  .section-label {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 17px;
-    color: var(--text-dark);
-    text-align: center;
-    margin-bottom: 32px;
-    font-weight: 400;
-    line-height: 1.6;
-  }
-
-  .dir-btns {
-    display: flex;
-    gap: 32px;
-    margin-bottom: 44px;
-  }
-
+  .dir-btns { display: flex; gap: 32px; margin-bottom: 44px; }
   .dir-btn {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    font-family: 'Noto Serif KR', serif;
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
-    outline: none;
+    width: 110px; height: 110px; border-radius: 50%; border: none; cursor: pointer;
+    font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; letter-spacing: 1px;
+    position: relative; transition: transform 0.2s, box-shadow 0.2s; outline: none;
   }
-  .dir-btn-left {
-    background: linear-gradient(135deg, #F2A58E, #E8796A);
-    color: white;
-    box-shadow: 0 8px 28px rgba(232, 121, 106, 0.35);
-  }
-  .dir-btn-right {
-    background: linear-gradient(135deg, #D4A96A, #C49050);
-    color: white;
-    box-shadow: 0 8px 28px rgba(196, 144, 80, 0.35);
-  }
-  .dir-btn:active {
-    transform: scale(0.93);
-  }
-  .dir-btn-label {
-    font-size: 12px;
-    font-weight: 300;
-    display: block;
-    margin-top: 3px;
-    opacity: 0.85;
-    letter-spacing: 0;
-    font-family: 'Gowun Dodum', sans-serif;
-  }
+  .dir-btn-left { background: linear-gradient(135deg, #F2A58E, #E8796A); color: white; box-shadow: 0 8px 28px rgba(232, 121, 106, 0.35); }
+  .dir-btn-right { background: linear-gradient(135deg, #D4A96A, #C49050); color: white; box-shadow: 0 8px 28px rgba(196, 144, 80, 0.35); }
+  .dir-btn:active { transform: scale(0.93); }
+  .dir-btn-label { font-size: 12px; font-weight: 300; display: block; margin-top: 3px; opacity: 0.85; letter-spacing: 0; font-family: 'Gowun Dodum', sans-serif; }
 
-  .time-input-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: white;
-    border-radius: 20px;
-    padding: 16px 24px;
-    box-shadow: 0 4px 20px rgba(196, 97, 74, 0.1);
-  }
-  .time-label {
-    font-size: 15px;
-    color: var(--text-mid);
-  }
-  .time-input {
-    width: 56px;
-    border: none;
-    border-bottom: 2px solid var(--warm-rose);
-    background: transparent;
-    font-family: 'Noto Serif KR', serif;
-    font-size: 22px;
-    color: var(--deep-rose);
-    text-align: center;
-    outline: none;
-    font-weight: 600;
-  }
+  .time-input-area { display: flex; align-items: center; gap: 10px; background: white; border-radius: 20px; padding: 16px 24px; box-shadow: 0 4px 20px rgba(196, 97, 74, 0.1); }
+  .time-label { font-size: 15px; color: var(--text-mid); }
+  .time-input { width: 56px; border: none; border-bottom: 2px solid var(--warm-rose); background: transparent; font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--deep-rose); text-align: center; outline: none; font-weight: 600; }
 
-  .footer-notice {
-    margin-top: auto;
-    padding-bottom: 20px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-light);
-    line-height: 1.8;
-  }
+  .footer-notice { margin-top: auto; padding-bottom: 20px; text-align: center; font-size: 11px; color: var(--text-light); line-height: 1.8; }
 
   /* ===== TIMER PAGE ===== */
-  #page-timer {
-    padding-bottom: 140px; /* 텍스트가 하단 버튼에 가려지지 않도록 여백 확보 */
-  }
+  #page-timer { padding-bottom: 140px; }
   .timer-header { text-align: center; margin-bottom: 36px; }
   .timer-direction { font-size: 13px; color: var(--text-light); letter-spacing: 2px; margin-bottom: 6px; }
   .timer-side { font-family: 'Noto Serif KR', serif; font-size: 26px; color: var(--text-dark); font-weight: 600; }
@@ -298,55 +212,16 @@
   .time-display { font-family: 'Noto Serif KR', serif; font-size: 52px; font-weight: 300; color: var(--text-dark); letter-spacing: 2px; }
   .time-unit { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-  .session-stats {
-    font-size: 13px;
-    color: var(--text-mid);
-    text-align: center;
-    line-height: 1.8;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 320px;
-  }
+  .session-stats { font-size: 13px; color: var(--text-mid); text-align: center; line-height: 1.8; margin-top: 10px; padding: 10px; border-radius: 12px; width: 100%; max-width: 320px; }
 
-  .bottom-actions {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 390px;
-    padding: 20px 28px 36px;
-    background: linear-gradient(to top, var(--cream) 75%, transparent);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 10;
-  }
-
-  .btn-primary {
-    width: 100%; padding: 17px; border: none; border-radius: 18px;
-    background: linear-gradient(135deg, #F2A58E, #E8796A);
-    color: white; font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 600; cursor: pointer;
-    box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35); transition: transform 0.18s;
-  }
-  .btn-secondary {
-    width: 100%; padding: 14px; border: 2px solid var(--blush); border-radius: 18px;
-    background: transparent; color: var(--text-mid); font-family: 'Gowun Dodum', sans-serif;
-    font-size: 15px; cursor: pointer;
-  }
+  .bottom-actions { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; padding: 20px 28px 36px; background: linear-gradient(to top, var(--cream) 75%, transparent); display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+  .btn-primary { width: 100%; padding: 17px; border: none; border-radius: 18px; background: linear-gradient(135deg, #F2A58E, #E8796A); color: white; font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 24px rgba(232, 121, 106, 0.35); transition: transform 0.18s; }
+  .btn-secondary { width: 100%; padding: 14px; border: 2px solid var(--blush); border-radius: 18px; background: transparent; color: var(--text-mid); font-family: 'Gowun Dodum', sans-serif; font-size: 15px; cursor: pointer; }
   .btn-primary:active, .btn-secondary:active { transform: scale(0.97); }
 
   .stats-inline { text-align: center; font-size: 12px; color: var(--text-light); padding-top: 4px; }
   .hidden { display: none !important; }
-
-  .btn-row {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    margin-bottom: 10px;
-  }
+  .btn-row { display: flex; gap: 12px; width: 100%; margin-bottom: 10px; }
   .btn-row button { flex: 1; }
   
   /* ===== DONE PAGE ===== */
@@ -371,14 +246,20 @@
 </head>
 <body>
 <div class="phone-wrap">
+  <!-- 1. BGM 재생/일시정지 버튼 -->
   <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">🎵</div>
+  
+  <!-- 2. 볼륨 팝업 슬라이더 영역 -->
   <div class="vol-wrap" id="vol-wrap">
     <div class="vol-btn" id="vol-btn" onclick="toggleVolPopup()">🔉</div>
     <div class="vol-popup" id="vol-popup">
-      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.5" orient="vertical">
+      <div class="slider-container">
+        <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.5">
+      </div>
     </div>
   </div>
-  <div class="version-tag">v.1.1</div>
+
+  <div class="version-tag">v.1.2</div>
   
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -394,14 +275,8 @@
     <div class="section-label">유축 시작 방향을<br>선택해 주세요</div>
 
     <div class="dir-btns">
-      <button class="dir-btn dir-btn-left" onclick="handleBtnClick(() => startTimer('left'))">
-        왼쪽
-        <span class="dir-btn-label">◀ LEFT</span>
-      </button>
-      <button class="dir-btn dir-btn-right" onclick="handleBtnClick(() => startTimer('right'))">
-        오른쪽
-        <span class="dir-btn-label">RIGHT ▶</span>
-      </button>
+      <button class="dir-btn dir-btn-left" onclick="handleBtnClick(() => startTimer('left'))">왼쪽<span class="dir-btn-label">◀ LEFT</span></button>
+      <button class="dir-btn dir-btn-right" onclick="handleBtnClick(() => startTimer('right'))">오른쪽<span class="dir-btn-label">RIGHT ▶</span></button>
     </div>
 
     <div class="time-input-area">
@@ -410,11 +285,7 @@
       <span class="time-label">분</span>
     </div>
 
-    <div class="footer-notice"><br>
-      ※ 브라우저를 켠 상태로 유지해주세요.<br>
-      ※ 스마트폰 무음 모드를 해제해주세요.<br>
-      ※ 스마트폰 볼륨을 살짝 올려주세요.
-    </div>
+    <div class="footer-notice"><br>※ 브라우저를 켠 상태로 유지해주세요.<br>※ 스마트폰 무음 모드를 해제해주세요.<br>※ 스마트폰 볼륨을 살짝 올려주세요.</div>
   </div>
 
   <!-- 타이머 페이지 -->
@@ -454,7 +325,7 @@
         <div class="stats-inline" id="stats-inline-text"></div>
       </div>
     </div>
-  </div> <!-- !! 타이머 페이지 종료 태그 추가됨 !! -->
+  </div>
 
   <!-- 완료 페이지 -->
   <div class="page" id="page-done">
@@ -487,30 +358,24 @@
   let wakeLock = null;
   let audioCtx = null;
 
-  // --- BGM 관련 변수 추가 ---
+  // --- BGM 및 볼륨 변수 세팅 ---
   const bgmPlaylist = ['song01.mp3', 'song02.mp3', 'song03.mp3', 'song04.mp3', 'song05.mp3', 'song06.mp3'];
-  // 처음 시작할 때부터 랜덤 곡으로 지정
-  let currentBgmIndex = Math.floor(Math.random() * bgmPlaylist.length); 
+  let currentBgmIndex = Math.floor(Math.random() * bgmPlaylist.length); // 랜덤 시작
   let isBgmPlaying = false;
   const bgmAudio = new Audio();
-  bgmAudio.volume = 0.5; // 추가: 기본 볼륨 50%
-  
-  // 노래가 끝나면 다음 노래로 랜덤 전환
+  bgmAudio.volume = 0.5; // 기본 볼륨 50%
+
+  // 노래가 끝나면 랜덤 곡(연속 같은곡 방지)으로 다음 곡 재생
   bgmAudio.addEventListener('ended', () => {
     let nextIndex;
-    // 직전에 들었던 곡과 똑같은 곡이 연달아 나오지 않도록 방지
-    do {
-      nextIndex = Math.floor(Math.random() * bgmPlaylist.length);
-    } while (nextIndex === currentBgmIndex);
-    
+    do { nextIndex = Math.floor(Math.random() * bgmPlaylist.length); } while (nextIndex === currentBgmIndex);
     currentBgmIndex = nextIndex;
     bgmAudio.src = bgmPlaylist[currentBgmIndex];
     bgmAudio.play().catch(e => console.warn('BGM 재생 오류:', e));
   });
-  // -------------------------
 
+  // --- 초기화 ---
   window.addEventListener('DOMContentLoaded', () => {
-    // DOM 캐싱 (성능 최적화)
     DOM.durationInput = document.getElementById('duration-input');
     DOM.timerSideLabel = document.getElementById('timer-side-label');
     DOM.timeDisplay = document.getElementById('time-display');
@@ -522,6 +387,8 @@
     DOM.btnPause = document.getElementById('btn-pause');
     DOM.statsInlineText = document.getElementById('stats-inline-text');
     DOM.doneStatsArea = document.getElementById('done-stats-area');
+    
+    // BGM & 볼륨 DOM 캐싱
     DOM.bgmBtn = document.getElementById('bgm-btn');
     DOM.volWrap = document.getElementById('vol-wrap');
     DOM.volBtn = document.getElementById('vol-btn');
@@ -529,52 +396,58 @@
     DOM.volSlider = document.getElementById('vol-slider');
 
     requestNotificationPermission();
+    setupVolumeControl(); // 볼륨 리스너 연결
   });
 
-  function requestNotificationPermission() {
-    if ("Notification" in window) Notification.requestPermission();
-  }
-  
+  // --- BGM 재생 / 일시정지 ---
   function toggleBGM() {
     if (!isBgmPlaying) {
       if (!bgmAudio.src || bgmAudio.src === window.location.href) {
         bgmAudio.src = bgmPlaylist[currentBgmIndex];
       }
       bgmAudio.play().catch(e => console.warn('BGM 재생 오류:', e));
-      DOM.bgmBtn.textContent = '⏸️'; // 재생 시 일시정지 아이콘으로 변경
+      DOM.bgmBtn.textContent = '⏸️';
       isBgmPlaying = true;
     } else {
       bgmAudio.pause();
-      DOM.bgmBtn.textContent = '🎵'; // 일시정지 시 음표 아이콘으로 변경
+      DOM.bgmBtn.textContent = '🎵';
       isBgmPlaying = false;
     }
   }
 
+  // --- 볼륨 조절 기능 ---
   function toggleVolPopup() {
-    DOM.volPopup.classList.toggle('show');
+    if(DOM.volPopup) DOM.volPopup.classList.toggle('show');
   }
 
   function setupVolumeControl() {
-    // 슬라이더 조절 시 볼륨 및 아이콘 변경
-    DOM.volSlider.addEventListener('input', (e) => {
-      const vol = parseFloat(e.target.value);
-      bgmAudio.volume = vol;
-      
-      if (vol === 0) DOM.volBtn.textContent = '🔇';
-      else if (vol < 0.3) DOM.volBtn.textContent = '🔈';
-      else if (vol < 0.7) DOM.volBtn.textContent = '🔉';
-      else DOM.volBtn.textContent = '🔊';
+    if (!DOM.volSlider) return;
+
+    // 모바일/PC 완벽 호환을 위해 input/change 동시 바인딩
+    ['input', 'change'].forEach(evt => {
+      DOM.volSlider.addEventListener(evt, (e) => {
+        const vol = parseFloat(e.target.value);
+        bgmAudio.volume = vol;
+        
+        if (vol === 0) DOM.volBtn.textContent = '🔇';
+        else if (vol < 0.3) DOM.volBtn.textContent = '🔈';
+        else if (vol < 0.7) DOM.volBtn.textContent = '🔉';
+        else DOM.volBtn.textContent = '🔊';
+      });
     });
 
-    // 외부 영역 클릭 시 볼륨 팝업 닫기
+    // 화면 빈 곳 클릭 시 볼륨 팝업 닫기
     document.addEventListener('click', (e) => {
-      if (!DOM.volWrap.contains(e.target)) {
+      if (DOM.volWrap && !DOM.volWrap.contains(e.target)) {
         DOM.volPopup.classList.remove('show');
       }
     });
   }
-  // -------------------------
-  
+
+  // 알림 권한 및 전송
+  function requestNotificationPermission() {
+    if ("Notification" in window) Notification.requestPermission();
+  }
   function sendNotification() {
     if ("Notification" in window && Notification.permission === "granted") {
       navigator.serviceWorker.ready.then((registration) => {
@@ -603,7 +476,6 @@
     try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }
     catch (err) { console.warn('WakeLock error:', err); }
   }
-
   function releaseWakeLock() {
     if (wakeLock !== null) { wakeLock.release(); wakeLock = null; }
   }
@@ -621,8 +493,7 @@
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 660;
-      osc.type = 'sine';
+      osc.frequency.value = 660; osc.type = 'sine';
       gain.gain.setValueAtTime(0, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
       gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
@@ -768,7 +639,6 @@
     `;
   }
 
-  // PWA 서비스 워커
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
