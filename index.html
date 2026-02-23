@@ -362,8 +362,13 @@
   const bgmPlaylist = ['song01.mp3', 'song02.mp3', 'song03.mp3', 'song04.mp3', 'song05.mp3', 'song06.mp3'];
   let currentBgmIndex = Math.floor(Math.random() * bgmPlaylist.length); // 랜덤 시작
   let isBgmPlaying = false;
+  
   const bgmAudio = new Audio();
-  bgmAudio.volume = 0.5; // 기본 볼륨 50%
+  bgmAudio.crossOrigin = "anonymous"; // 모바일 볼륨 제어 보안 에러 방지
+  bgmAudio.volume = 0.5; // PC 기본 볼륨 50%
+
+  let bgmGainNode = null;
+  let bgmSourceNode = null;
 
   // 노래가 끝나면 랜덤 곡(연속 같은곡 방지)으로 다음 곡 재생
   bgmAudio.addEventListener('ended', () => {
@@ -399,8 +404,27 @@
     setupVolumeControl(); // 볼륨 리스너 연결
   });
 
+  // --- BGM을 Web Audio API에 연결 (모바일 볼륨 제어 핵심 로직) ---
+  function connectBgmToWebAudio() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!bgmSourceNode) {
+        bgmSourceNode = audioCtx.createMediaElementSource(bgmAudio);
+        bgmGainNode = audioCtx.createGain();
+        bgmGainNode.gain.value = parseFloat(DOM.volSlider ? DOM.volSlider.value : 0.5);
+        bgmSourceNode.connect(bgmGainNode);
+        bgmGainNode.connect(audioCtx.destination);
+      }
+    } catch (e) {
+      console.warn('Web Audio API 연결 오류:', e);
+    }
+  }
+
   // --- BGM 재생 / 일시정지 ---
   function toggleBGM() {
+    warmAudio(); 
+    connectBgmToWebAudio(); // 모바일 강제 볼륨 제어를 위한 연결
+
     if (!isBgmPlaying) {
       if (!bgmAudio.src || bgmAudio.src === window.location.href) {
         bgmAudio.src = bgmPlaylist[currentBgmIndex];
@@ -427,7 +451,12 @@
     ['input', 'change'].forEach(evt => {
       DOM.volSlider.addEventListener(evt, (e) => {
         const vol = parseFloat(e.target.value);
-        bgmAudio.volume = vol;
+        
+        bgmAudio.volume = vol; // PC 환경 대응
+        if (bgmGainNode && audioCtx) {
+           // iOS/안드로이드 모바일 환경의 볼륨을 강제 제어
+           bgmGainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+        }
         
         if (vol === 0) DOM.volBtn.textContent = '🔇';
         else if (vol < 0.3) DOM.volBtn.textContent = '🔈';
