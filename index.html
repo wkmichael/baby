@@ -435,13 +435,20 @@
 
   // --- BGM 관련 변수 추가 ---
   const bgmPlaylist = ['song01.mp3', 'song02.mp3', 'song03.mp3', 'song04.mp3', 'song05.mp3', 'song06.mp3'];
-  let currentBgmIndex = 0;
+  // 처음 시작할 때부터 랜덤 곡으로 지정
+  let currentBgmIndex = Math.floor(Math.random() * bgmPlaylist.length); 
   let isBgmPlaying = false;
   const bgmAudio = new Audio();
   
-  // 노래가 끝나면 다음 노래로 자동 전환
+  // 노래가 끝나면 다음 노래로 랜덤 전환
   bgmAudio.addEventListener('ended', () => {
-    currentBgmIndex = (currentBgmIndex + 1) % bgmPlaylist.length;
+    let nextIndex;
+    // 직전에 들었던 곡과 똑같은 곡이 연달아 나오지 않도록 방지
+    do {
+      nextIndex = Math.floor(Math.random() * bgmPlaylist.length);
+    } while (nextIndex === currentBgmIndex);
+    
+    currentBgmIndex = nextIndex;
     bgmAudio.src = bgmPlaylist[currentBgmIndex];
     bgmAudio.play().catch(e => console.warn('BGM 재생 오류:', e));
   });
