@@ -228,7 +228,19 @@
   .time-display { font-family: 'Noto Serif KR', serif; font-size: 52px; font-weight: 300; color: var(--text-dark); letter-spacing: 2px; }
   .time-unit { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-  .session-stats { font-size: 12px; color: var(--text-light); text-align: center; line-height: 1.8; }
+  /* 상태 문구 위치 및 여백 수정 */
+  .session-stats {
+    font-size: 13px;
+    color: var(--text-mid);
+    text-align: center;
+    line-height: 1.8;
+    margin-top: 20px;
+    padding: 10px;
+    /*background: rgba(255, 255, 255, 0.5); /* 가독성을 위해 옅은 배경 추가 */
+    border-radius: 12px;
+    width: 100%;
+    max-width: 320px;
+  }
 
   .bottom-actions {
     position: fixed;
@@ -261,7 +273,7 @@
   .stats-inline { text-align: center; font-size: 12px; color: var(--text-light); padding-top: 4px; }
   .hidden { display: none !important; }
 
-  /* 버튼 가로 배치를 위한 스타일 */
+  /* 버튼 가로 배치를 위한 스타일 및 여백 조정 */
   .btn-row {
     display: flex;
     gap: 12px;
@@ -269,7 +281,7 @@
     margin-bottom: 10px;
   }
   .btn-row button {
-    flex: 1; /* 버튼이 동일한 비율로 가로를 채움 */
+    flex: 1;
   }
   
   /* ===== DONE PAGE ===== */
@@ -361,13 +373,13 @@
         </div>
         <button class="btn-secondary" onclick="handleBtnClick(endSession)">종료하기</button>
       </div>
+      
       <div id="end-actions" class="hidden">
-        <button class="btn-primary" id="btn-opposite" onclick="handleBtnClick(startOpposite)">반대쪽 시작</button>
+        <button class="btn-primary" onclick="handleBtnClick(startOpposite)">반대쪽 시작</button>
         <button class="btn-secondary" style="margin-top:10px;" onclick="handleBtnClick(endSession)">전체 종료</button>
         <div class="stats-inline" id="stats-inline-text"></div>
       </div>
     </div>
-  </div>
 
   <div class="page" id="page-done">
     <div class="done-card">
@@ -396,20 +408,17 @@
   // 2. 일시정지 토글 함수 추가
   function togglePause() {
     const pauseBtn = document.getElementById('btn-pause');
-    
     if (!state.isPaused) {
-      // 일시정지 실행
       state.isPaused = true;
       clearInterval(state.timerInterval);
       state.timerInterval = null;
       pauseBtn.textContent = '다시 시작';
-      releaseWakeLock(); // 정지 시 잠금방지 해제
+      releaseWakeLock();
     } else {
-      // 타이머 재개
       state.isPaused = false;
       pauseBtn.textContent = '일시정지';
-      requestWakeLock(); // 재개 시 다시 잠금방지
-      startInterval();   // 인터벌 다시 시작
+      requestWakeLock();
+      startInterval();
     }
   }
 
@@ -552,7 +561,7 @@
       if (state.secondsLeft <= 0) {
         clearInterval(state.timerInterval);
         state.timerInterval = null;
-        state.sessions[state.currentSide].count++;
+        state.sessions[state.currentSide].count++; // 회수 증가
         onTimerEnd();
       }
     }, 1000);
@@ -562,6 +571,8 @@
     const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
     const s = (state.secondsLeft % 60).toString().padStart(2, '0');
     document.getElementById('time-display').textContent = `${m}:${s}`;
+    
+    // 이 부분이 호출될 때 횟수가 포함된 텍스트가 갱신됩니다.
     document.getElementById('session-stats').textContent = getStatsText();
   }
 
@@ -582,8 +593,9 @@
   }
 
   function getStatsText() {
-    const L = state.sessions.left; const R = state.sessions.right;
-    return `왼쪽 ${Math.floor(L.seconds/60)}분  ·  오른쪽 ${Math.floor(R.seconds/60)}분`;
+    const L = state.sessions.left;
+    const R = state.sessions.right;
+    return `왼쪽 ${Math.floor(L.seconds/60)}분(${L.count}회)  ·  오른쪽 ${Math.floor(R.seconds/60)}분(${R.count}회)`;
   }
 
   function endSession() {
