@@ -52,6 +52,21 @@
     flex-direction: column;
   }
 
+  /* 좌상단 BGM 버튼 */
+  .bgm-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+    z-index: 10;
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+  }
+  .bgm-btn:active {
+    transform: scale(0.9);
+  }
+
   /* 우상단 버전 텍스트 */
   .version-tag {
     position: absolute;
@@ -308,6 +323,7 @@
 </head>
 <body>
 <div class="phone-wrap">
+  <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">🎵</div>
   <div class="version-tag">v.1.1</div>
   
   <div class="blob blob-1"></div>
@@ -417,6 +433,20 @@
   let wakeLock = null;
   let audioCtx = null;
 
+  // --- BGM 관련 변수 추가 ---
+  const bgmPlaylist = ['song01.mp3', 'song02.mp3', 'song03.mp3', 'song04.mp3', 'song05.mp3', 'song06.mp3'];
+  let currentBgmIndex = 0;
+  let isBgmPlaying = false;
+  const bgmAudio = new Audio();
+  
+  // 노래가 끝나면 다음 노래로 자동 전환
+  bgmAudio.addEventListener('ended', () => {
+    currentBgmIndex = (currentBgmIndex + 1) % bgmPlaylist.length;
+    bgmAudio.src = bgmPlaylist[currentBgmIndex];
+    bgmAudio.play().catch(e => console.warn('BGM 재생 오류:', e));
+  });
+  // -------------------------
+
   window.addEventListener('DOMContentLoaded', () => {
     // DOM 캐싱 (성능 최적화)
     DOM.durationInput = document.getElementById('duration-input');
@@ -430,12 +460,28 @@
     DOM.btnPause = document.getElementById('btn-pause');
     DOM.statsInlineText = document.getElementById('stats-inline-text');
     DOM.doneStatsArea = document.getElementById('done-stats-area');
+    DOM.bgmBtn = document.getElementById('bgm-btn');
 
     requestNotificationPermission();
   });
 
   function requestNotificationPermission() {
     if ("Notification" in window) Notification.requestPermission();
+  }
+  
+  function toggleBGM() {
+    if (!isBgmPlaying) {
+      if (!bgmAudio.src || bgmAudio.src === window.location.href) {
+        bgmAudio.src = bgmPlaylist[currentBgmIndex];
+      }
+      bgmAudio.play().catch(e => console.warn('BGM 재생 오류:', e));
+      DOM.bgmBtn.textContent = '⏸️'; // 재생 시 일시정지 아이콘으로 변경
+      isBgmPlaying = true;
+    } else {
+      bgmAudio.pause();
+      DOM.bgmBtn.textContent = '🎵'; // 일시정지 시 음표 아이콘으로 변경
+      isBgmPlaying = false;
+    }
   }
   
   function sendNotification() {
