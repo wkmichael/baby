@@ -67,6 +67,54 @@
     transform: scale(0.9);
   }
 
+  /* 볼륨 조절 버튼 및 팝업 (BGM 버튼 우측에 배치) */
+  .vol-wrap {
+    position: absolute;
+    top: 20px;
+    left: 60px; /* BGM 버튼 옆 */
+    z-index: 10;
+  }
+  .vol-btn {
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+  }
+  .vol-btn:active {
+    transform: scale(0.9);
+  }
+  .vol-popup {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%) scaleY(0);
+    transform-origin: top;
+    background: white;
+    border-radius: 12px;
+    padding: 12px 0;
+    box-shadow: 0 4px 16px rgba(196, 97, 74, 0.2);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+  }
+  .vol-popup.show {
+    transform: translateX(-50%) scaleY(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* 세로형 슬라이더 */
+  input[type=range][orient=vertical] {
+    appearance: slider-vertical;
+    -webkit-appearance: slider-vertical;
+    width: 20px;
+    height: 90px;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
   /* 우상단 버전 텍스트 */
   .version-tag {
     position: absolute;
@@ -324,6 +372,12 @@
 <body>
 <div class="phone-wrap">
   <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">🎵</div>
+  <div class="vol-wrap" id="vol-wrap">
+    <div class="vol-btn" id="vol-btn" onclick="toggleVolPopup()">🔉</div>
+    <div class="vol-popup" id="vol-popup">
+      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.5" orient="vertical">
+    </div>
+  </div>
   <div class="version-tag">v.1.1</div>
   
   <div class="blob blob-1"></div>
@@ -439,6 +493,7 @@
   let currentBgmIndex = Math.floor(Math.random() * bgmPlaylist.length); 
   let isBgmPlaying = false;
   const bgmAudio = new Audio();
+  bgmAudio.volume = 0.5; // 추가: 기본 볼륨 50%
   
   // 노래가 끝나면 다음 노래로 랜덤 전환
   bgmAudio.addEventListener('ended', () => {
@@ -468,6 +523,10 @@
     DOM.statsInlineText = document.getElementById('stats-inline-text');
     DOM.doneStatsArea = document.getElementById('done-stats-area');
     DOM.bgmBtn = document.getElementById('bgm-btn');
+    DOM.volWrap = document.getElementById('vol-wrap');
+    DOM.volBtn = document.getElementById('vol-btn');
+    DOM.volPopup = document.getElementById('vol-popup');
+    DOM.volSlider = document.getElementById('vol-slider');
 
     requestNotificationPermission();
   });
@@ -490,6 +549,31 @@
       isBgmPlaying = false;
     }
   }
+
+  function toggleVolPopup() {
+    DOM.volPopup.classList.toggle('show');
+  }
+
+  function setupVolumeControl() {
+    // 슬라이더 조절 시 볼륨 및 아이콘 변경
+    DOM.volSlider.addEventListener('input', (e) => {
+      const vol = parseFloat(e.target.value);
+      bgmAudio.volume = vol;
+      
+      if (vol === 0) DOM.volBtn.textContent = '🔇';
+      else if (vol < 0.3) DOM.volBtn.textContent = '🔈';
+      else if (vol < 0.7) DOM.volBtn.textContent = '🔉';
+      else DOM.volBtn.textContent = '🔊';
+    });
+
+    // 외부 영역 클릭 시 볼륨 팝업 닫기
+    document.addEventListener('click', (e) => {
+      if (!DOM.volWrap.contains(e.target)) {
+        DOM.volPopup.classList.remove('show');
+      }
+    });
+  }
+  // -------------------------
   
   function sendNotification() {
     if ("Notification" in window && Notification.permission === "granted") {
