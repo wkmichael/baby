@@ -242,6 +242,32 @@
   .ping-ring { position: absolute; inset: -12px; border-radius: 50%; border: 3px solid var(--warm-rose); animation: ping 1.2s ease-out infinite; display: none; }
   .ping-ring.show { display: block; }
   @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.4); opacity: 0; } }
+
+  /* ===== 새로 추가된 UI 및 애니메이션 ===== */
+  
+  /* 1. 알림음 확인 버튼 */
+  .test-alarm-wrap { margin-top: 24px; text-align: center; }
+  .btn-test { background: transparent; border: 1.5px solid var(--soft-coral); color: var(--deep-rose); padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: 'Gowun Dodum', sans-serif; cursor: pointer; transition: all 0.2s; }
+  .btn-test:active { background: var(--blush); transform: scale(0.95); }
+
+  /* 2. 사운드 복구(Wake) 모달창 */
+  .audio-modal-overlay { position: fixed; inset: 0; background: rgba(61, 43, 36, 0.5); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(3px); }
+  .audio-modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .audio-modal { background: white; padding: 28px 32px; border-radius: 24px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.15); transform: translateY(20px); transition: transform 0.3s ease; width: 85%; max-width: 320px; }
+  .audio-modal-overlay.show .audio-modal { transform: translateY(0); }
+  .audio-modal-text { font-size: 16px; color: var(--text-dark); margin-bottom: 24px; line-height: 1.6; font-weight: 600; }
+  .btn-wake-audio { background: linear-gradient(135deg, #F2A58E, #E8796A); color: white; border: none; padding: 16px 24px; border-radius: 18px; font-size: 16px; font-family: 'Noto Serif KR', serif; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 6px 20px rgba(232, 121, 106, 0.35); transition: transform 0.15s; }
+  .btn-wake-audio:active { transform: scale(0.95); }
+
+  /* 3. 타이머 종료 시 심장박동 배경 깜빡임 애니메이션 */
+  @keyframes pulse-bg-anim {
+    0%, 100% { background-color: var(--cream); }
+    25% { background-color: #F7D5C8; /* blush 색상 (부드러운 핑크) */ }
+    50% { background-color: var(--cream); }
+    75% { background-color: #E8896E; /* soft-coral 색상 (조금 더 짙은 색) */ }
+  }
+  .pulse-bg { animation: pulse-bg-anim 2.5s ease-in-out; }
+
 </style>
 </head>
 <body>
@@ -283,6 +309,11 @@
       <span class="time-label">1회 유축 시간</span>
       <input type="number" class="time-input" id="duration-input" value="5" min="1" max="60">
       <span class="time-label">분</span>
+    </div>
+
+    <!-- 추가할 위치: 알림음 확인 버튼 -->
+    <div class="test-alarm-wrap">
+      <button class="btn-test" onclick="handleBtnClick(testAlarmSound)">🔔 알림음 확인</button>
     </div>
 
     <div class="footer-notice"><br>※ 브라우저를 켠 상태로 유지해주세요.<br>※ 스마트폰 무음 모드를 해제해주세요.<br>※ 스마트폰 볼륨을 살짝 올려주세요.</div>
@@ -339,6 +370,15 @@
       </div>
     </div>
   </div>
+
+  <!-- 오디오 복구 모달창 (평소엔 숨겨져 있음) -->
+  <div class="audio-modal-overlay" id="audio-modal">
+    <div class="audio-modal">
+      <div class="audio-modal-text">오디오가 비활성화 되었습니다.<br>알림을 위해 사운드를 켜주세요.</div>
+      <button class="btn-wake-audio" onclick="wakeUpAudio()">사운드 다시 켜기 🔔</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -629,6 +669,17 @@
   function onTimerEnd() {
     playAlarm();
     sendNotification();
+    
+    // (안드로이드) 스마트폰 진동 알림 추가
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    
+    // (시각 알림) 화면 배경 심장박동 애니메이션 추가
+    const phoneWrap = document.querySelector('.phone-wrap');
+    phoneWrap.classList.add('pulse-bg');
+    setTimeout(() => {
+      phoneWrap.classList.remove('pulse-bg'); // 2.5초 후 초기화
+    }, 2500);
+
     DOM.pingRing.classList.add('show');
     DOM.runningActions.classList.add('hidden');
     DOM.endActions.classList.remove('hidden');
@@ -674,10 +725,37 @@
     });
   }
 
+  // --- 알림음 테스트 함수 ---
+  function testAlarmSound() {
+    playAlarm();
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]); // 테스트 시 진동도 함께 울림
+  }
+
+  // --- 수면 상태 오디오 깨우기 (모달 버튼 클릭 시) ---
+  function wakeUpAudio() {
+    warmAudio(); // 오디오 강제 활성화 (사용자 제스처)
+    playClickBeep(); // 일반 버튼 클릭음 발생
+    document.getElementById('audio-modal').classList.remove('show');
+  }
+
+  // --- 화면 복귀(백그라운드 -> 포그라운드) 감지 및 모달 처리 ---
   document.addEventListener('visibilitychange', async () => {
-    if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    // 1. 화면이 다시 보일 때 화면 꺼짐 방지(WakeLock) 재활성화
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+      await requestWakeLock();
+    }
+    
+    if (document.visibilityState === 'visible') {
+      // 2. 오디오 컨텍스트가 멈춰있다면(suspended), 모달창 띄우기
+      if (audioCtx && audioCtx.state === 'suspended') {
+        document.getElementById('audio-modal').classList.add('show');
+      } else {
+        // 이미 켜져있다면 (혹시 모를 오류 방지용)
+        if (audioCtx) audioCtx.resume();
+      }
+    }
   });
+</script>
 </script>
 </body>
 </html>
