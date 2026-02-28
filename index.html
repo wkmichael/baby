@@ -614,6 +614,11 @@
   }
 
   function startOpposite() {
+    // 타이머가 진행 중(남은 시간이 0보다 크고 처음 세팅시간보다 작음)일 때 넘어가면 횟수 1 증가
+    if (state.secondsLeft > 0 && state.secondsLeft < state.totalSeconds) {
+      state.sessions[state.currentSide].count++;
+    }
+
     state.currentSide = state.currentSide === 'left' ? 'right' : 'left';
     DOM.runningActions.classList.remove('hidden');
     DOM.endActions.classList.add('hidden');
@@ -693,7 +698,16 @@
   }
 
   function endSession() {
-    if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+    if (state.timerInterval) { 
+      clearInterval(state.timerInterval); 
+      state.timerInterval = null; 
+    }
+    
+    // 중간에 종료하기를 눌렀을 때도 시간이 조금이라도 흘렀다면 횟수 1 증가
+    if (state.secondsLeft > 0 && state.secondsLeft < state.totalSeconds) {
+      state.sessions[state.currentSide].count++;
+    }
+
     releaseWakeLock();
     buildDoneStats();
     showPage('page-done');
@@ -710,12 +724,24 @@
   }
 
   function buildDoneStats() {
-    const L = state.sessions.left; const R = state.sessions.right;
+    const L = state.sessions.left; 
+    const R = state.sessions.right;
     const totalS = L.seconds + R.seconds;
+    const totalC = L.count + R.count; // 총 횟수 계산
+    
     DOM.doneStatsArea.innerHTML = `
-      <div class="done-stat-row"><span class="done-stat-label">◀ 왼쪽</span><span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span></div>
-      <div class="done-stat-row"><span class="done-stat-label">오른쪽 ▶</span><span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span></div>
-      <div class="done-total-row"><span class="done-total-label">총 유축 시간</span><span class="done-total-value">${Math.floor(totalS/60)}분 ${totalS%60}초</span></div>
+      <div class="done-stat-row">
+        <span class="done-stat-label">◀ 왼쪽 (${L.count}회)</span>
+        <span class="done-stat-value">${Math.floor(L.seconds/60)}분 ${L.seconds%60}초</span>
+      </div>
+      <div class="done-stat-row">
+        <span class="done-stat-label">오른쪽 ▶ (${R.count}회)</span>
+        <span class="done-stat-value">${Math.floor(R.seconds/60)}분 ${R.seconds%60}초</span>
+      </div>
+      <div class="done-total-row">
+        <span class="done-total-label">총 유축 시간 (${totalC}회)</span>
+        <span class="done-total-value">${Math.floor(totalS/60)}분 ${totalS%60}초</span>
+      </div>
     `;
   }
 
